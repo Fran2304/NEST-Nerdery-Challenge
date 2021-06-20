@@ -15,6 +15,12 @@ enum Role{
   CLIENT
 }
 
+enum Status {
+  CANCELLED
+  PENDING
+  PAID
+}
+
 model User {
   id    Int     @default(autoincrement()) @id
   firstName String  @map(name: "first_name")
@@ -24,4 +30,56 @@ model User {
   emailVerified Boolean @default(false) @map(name: "email_verified")
   username String @unique @db.VarChar(255)
   role Role
+  active Boolean
+
+  shoppingCards ShoppingCard[] 
+}
+
+model Author {
+  id Int @default(autoincrement()) @id
+  fullName String @map(name: "full_name")
+
+  books Book[]
+}
+
+model Category {
+  id Int @default(autoincrement()) @id
+  name String 
+
+  books Book[]  @relation(references: [id])
+}
+
+model Book {
+  id Int @default(autoincrement()) @id
+  title String  @db.VarChar(100) 
+  description String  @db.VarChar(255)
+  yearPublished Int @map(name: "year_published")
+  quantity Int
+  price Decimal @db.Decimal(5,2)
+  urlImage String @db.VarChar(255) @map(name: "url_image")
+  active Boolean
+
+  authorId Int @map(name: "author_id")
+  author Author @relation(fields: [authorId], references: [id])
+  categories Category[]  @relation(references: [id])
+}
+
+model CardItem {
+  id Int @default(autoincrement()) @id
+  quantiy Int
+  subtotal Decimal @db.Decimal(5,2) 
+  dateCreated DateTime @default(now()) @db.Timestamp(6) @map(name: "date_created") 
+
+  shoppingId Int @map(name: "shopping_id")
+  ShoppingCard ShoppingCard @relation(fields: [shoppingId], references: [id])
+}
+
+model ShoppingCard {
+  id Int @default(autoincrement()) @id
+  total Decimal @db.Decimal(5,2)
+  status Status
+
+  userId Int @map(name: "user_id")
+  user User @relation(fields: [userId], references: [id])
+  CardItem CardItem[]
 }
