@@ -40,7 +40,6 @@ export class UsersService {
         username: createUserDto.username,
         email: createUserDto.email,
         password: createUserDto.password,
-        active: true,
       },
     });
 
