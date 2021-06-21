@@ -1,6 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnprocessableEntityException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClient } from '@prisma/client';
+import { UserDto } from './dto/user.dto';
 
 const prisma = new PrismaClient();
 
@@ -25,7 +32,9 @@ export class UsersService {
     return this.users;
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+  async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
+    //console.log('createUserDto', createUserDto)
+
     const createdUser = await prisma.user.create({
       data: {
         username: createUserDto.username,
@@ -34,10 +43,12 @@ export class UsersService {
         active: true,
       },
     });
+
     if (!createdUser) {
-      throw new Error('ERROR: cant create user');
+      throw new UnprocessableEntityException('User cant be created');
     }
-    return createUserDto;
+
+    return createdUser;
   }
 
   async findOne(email: string): Promise<any> {
