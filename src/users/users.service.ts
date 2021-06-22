@@ -18,7 +18,7 @@ export class UsersService {
       id: 2,
       useranme: 'fran',
       email: 'fran@test.com',
-      password: 'password',
+      password: '$2b$10$.wRt61hw8SJKnYDCqr1fluVeY01Y7LDCALbSweUDA7/xkdm.AF/RW',
     },
   ];
 
