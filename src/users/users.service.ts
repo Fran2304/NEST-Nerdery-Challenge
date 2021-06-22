@@ -4,17 +4,13 @@ import { Prisma, PrismaClient, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from 'src/auth/auth.service';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class UsersService {
-  //private readonly authService: AuthService;
-  constructor(
-    private prismaService: PrismaService,
-    private authService: AuthService,
-  ) {}
+  private readonly authService: AuthService;
+  constructor(private prismaService: PrismaService) {}
 
   getUsers() {
     return this.prismaService.user.findMany();
@@ -52,7 +48,7 @@ export class UsersService {
       },
     });
 
-    console.log('createUserDto', createdUser);
+    //console.log('createUserDto', createdUser);
     const tokenJWT = this.authService.createToken(createdUser);
 
     console.log('tokenJWT', tokenJWT);
