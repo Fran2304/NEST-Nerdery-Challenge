@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -10,10 +11,13 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = await this.userService.findOne(email);
-    //console.log('user', user)
-    if (user && user.password === password) {
-      const { password, email, ...result } = user;
+    const userStored = await this.userService.findOne(email);
+    console.log(userStored);
+    // if (userStored == null) {
+    //   throw new UnprocessableEntityException('ERROR: invalid email');
+    // }
+    if (userStored && userStored.password === password) {
+      const { password, email, ...result } = userStored;
       return result;
     }
     return null;
