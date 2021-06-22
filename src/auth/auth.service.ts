@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -26,27 +30,40 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const userStored = await this.userService.findOne(email);
-    console.log(userStored);
-    // if (userStored == null) {
-    //   throw new UnprocessableEntityException('ERROR: invalid email');
-    // }
+    //console.log('userStored', userStored)
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
     );
-    console.log('password', passwordChecked);
-    console.log('passwordChecked', passwordChecked);
-    if (userStored && passwordChecked) {
+    // console.log('password', passwordChecked);
+    // console.log('passwordChecked', passwordChecked);
+    if (passwordChecked) {
       const { password, email, ...result } = userStored;
+      //console.log('result', result)
       return result;
     }
-
+    
     return null;
   }
-
-  async login(user: any) {
+  async createToken(user) {
     const payload = { username: user.useranme, id: user.id };
 
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  async signUp(dataRegister) {
+    const user = await this.userService.createUser(dataRegister)
+    return this.createToken(user)
+  }
+
+  async signIn(user: any) {
+    console.log('user', user)
+    const userStored = await this.validateUser(user.email, user.password)
+    
+    const payload = { username: userStored.useranme, id: userStored.id };
+    console.log('payload', payload)
     return {
       access_token: this.jwtService.sign(payload),
     };

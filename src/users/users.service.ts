@@ -9,20 +9,6 @@ const prisma = new PrismaClient();
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
-  private readonly users = [
-    {
-      id: 1,
-      useranme: 'diana98',
-      email: 'diana98@test.com',
-      password: 'password',
-    },
-    {
-      id: 2,
-      useranme: 'fran',
-      email: 'fran@test.com',
-      password: '$2b$10$.wRt61hw8SJKnYDCqr1fluVeY01Y7LDCALbSweUDA7/xkdm.AF/RW',
-    },
-  ];
 
   getUsers() {
     return this.prismaService.user.findMany();
@@ -37,9 +23,8 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<CreateUserDto> {
-    //console.log('createUserDto', createUserDto)
     const passwordHashed = await this.generatePassword(createUserDto.password);
-    const createdUser = await prisma.user.create({
+    return await prisma.user.create({
       data: {
         username: createUserDto.username,
         email: createUserDto.email,
@@ -49,16 +34,10 @@ export class UsersService {
         role: 'CLIENT',
       },
     });
-
-    if (!createdUser) {
-      throw new UnprocessableEntityException('User cant be created');
-    }
-    console.log(createdUser);
-    return createdUser;
   }
 
   async findOne(email: string): Promise<any> {
-    return this.prismaService.user.findUnique({
+    await this.prismaService.user.findUnique({
       where: { email },
     });
   }
