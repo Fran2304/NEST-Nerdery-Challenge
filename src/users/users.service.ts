@@ -2,11 +2,13 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/common/prisma/prisma.service';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class UsersService {
+  constructor(private prismaService: PrismaService) {}
   private readonly users = [
     {
       id: 1,
@@ -23,7 +25,7 @@ export class UsersService {
   ];
 
   getUsers() {
-    return this.users;
+    return this.prismaService.user.findMany();
   }
 
   async generatePassword(plainPassword: string): Promise<string> {
@@ -56,6 +58,8 @@ export class UsersService {
   }
 
   async findOne(email: string): Promise<any> {
-    return this.users.find((user) => user.email === email);
+    return this.prismaService.user.findUnique({
+      where: { email },
+    });
   }
 }
