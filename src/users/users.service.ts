@@ -1,13 +1,7 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnprocessableEntityException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClient } from '@prisma/client';
-import { UserDto } from './dto/user.dto';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -24,7 +18,7 @@ export class UsersService {
       id: 2,
       useranme: 'fran',
       email: 'fran@test.com',
-      password: 'password',
+      password: '$2b$10$.wRt61hw8SJKnYDCqr1fluVeY01Y7LDCALbSweUDA7/xkdm.AF/RW',
     },
   ];
 
@@ -32,21 +26,32 @@ export class UsersService {
     return this.users;
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
-    //console.log('createUserDto', createUserDto)
+  async generatePassword(plainPassword: string): Promise<string> {
+    if (!plainPassword) {
+      throw new UnprocessableEntityException('Password cant be empty ');
+    }
+    const hashed = await bcrypt.hash(plainPassword, 10);
+    return hashed;
+  }
 
+  async createUser(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    //console.log('createUserDto', createUserDto)
+    const passwordHashed = await this.generatePassword(createUserDto.password);
     const createdUser = await prisma.user.create({
       data: {
         username: createUserDto.username,
         email: createUserDto.email,
-        password: createUserDto.password,
+        password: passwordHashed,
+        firstName: '',
+        lastName: '',
+        role: 'CLIENT',
       },
     });
 
     if (!createdUser) {
       throw new UnprocessableEntityException('User cant be created');
     }
-
+    console.log(createdUser);
     return createdUser;
   }
 

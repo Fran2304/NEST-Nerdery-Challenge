@@ -26,8 +26,8 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req) {
-    //console.log('body', req.user);
+  async login(@Request() req) {
+    console.log('body', req);
     return this.authService.login(req.user);
   }
 
@@ -39,7 +39,7 @@ export class AppController {
   }
 
   @Post('signup')
-  async signup(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
+  async signup(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
     return this.userService.createUser(createUserDto);
   }
 
