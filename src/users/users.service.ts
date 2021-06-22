@@ -8,11 +8,13 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClient } from '@prisma/client';
 import { UserDto } from './dto/user.dto';
+import { SengridService } from 'src/helpers/sengrid.service';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class UsersService {
+  constructor(private readonly sengridService: SengridService) {}
   private readonly users = [
     {
       id: 1,
