@@ -11,7 +11,7 @@ import { User } from '@prisma/client';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { LocalAuthGuard } from './users/local-auth.guard';
+import { LocalAuthGuard } from './auth/local-auth.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import { UserDto } from './users/dto/user.dto';
@@ -25,11 +25,10 @@ export class AppController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
-  @Post('signin')
-  async login(@Body() body) {
-    //console.log('body', req);
-    const { email, password } = body;
-    return this.userService.signIn(email, password);
+  @Post('login')
+  async login(@Request() req) {
+    console.log('body', req);
+    return this.authService.login(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -40,10 +39,9 @@ export class AppController {
   }
 
   @Post('signup')
-  async signup(@Body() createUserDto: CreateUserDto): Promise<any> {
-    return this.userService.signUp(createUserDto);
+  async signup(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    return this.userService.createUser(createUserDto);
   }
-
 
   // @Get('/')
   // getHello() {
