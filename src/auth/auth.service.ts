@@ -6,12 +6,17 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { SengridService } from 'src/common/services/sengrid.service';
+import { generateHash } from 'src/common/helpers/generatorEmailHash';
+import { PrismaService } from 'src/common/services/prisma.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
+    private sengridService: SengridService,
+    private prismaService: PrismaService,
   ) {}
 
   async checkPassword(
@@ -30,7 +35,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const userStored = await this.userService.findOne(email);
-    
+
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
@@ -42,7 +47,7 @@ export class AuthService {
 
       return result;
     }
-    
+
     return null;
   }
   async createToken(user) {
@@ -54,12 +59,26 @@ export class AuthService {
   }
 
   async signUp(dataRegister) {
-    const user = await this.userService.createUser(dataRegister)
-    return this.createToken(user)
+    const confirmationCode = generateHash();
+    await this.sengridService.sendMailOfConfirmationCode(
+      dataRegister.email,
+      confirmationCode,
+    );
+    await this.userService.createUser(dataRegister, confirmationCode);
+    //return this.createToken(user);
+    return {
+      message: 'Check your email',
+    };
+  }
+
+  async confirmEmail(tokenEmail) {
+    const user = await this.userService.findUserWithToken(tokenEmail);
+    if (!user) throw new NotFoundException('Not found User');
+    return this.createToken(user);
   }
 
   async signIn(user: any) {
     const payload = { username: user.username, sub: user.userId };
-    return this.createToken(payload)
+    return this.createToken(payload);
   }
 }

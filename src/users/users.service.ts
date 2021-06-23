@@ -1,16 +1,13 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
-import { SengridService } from 'src/helpers/sengrid.service';
+import { SengridService } from 'src/common/services/sengrid.service';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from 'src/common/prisma/prisma.service';
-
+import { PrismaService } from 'src/common/services/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly sengridService: SengridService,
-    private prismaService: PrismaService){}
+  constructor(private prismaService: PrismaService) {}
 
   getUsers() {
     return this.prismaService.user.findMany();
@@ -24,7 +21,10 @@ export class UsersService {
     return hashed;
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+  async createUser(
+    createUserDto: CreateUserDto,
+    tokenEmail: string,
+  ): Promise<CreateUserDto> {
     const passwordHashed = await this.generatePassword(createUserDto.password);
     return await this.prismaService.user.create({
       data: {
@@ -34,6 +34,7 @@ export class UsersService {
         firstName: '',
         lastName: '',
         role: 'CLIENT',
+        hashActivation: tokenEmail,
       },
     });
   }
@@ -41,6 +42,12 @@ export class UsersService {
   async findOne(email: string): Promise<any> {
     return await this.prismaService.user.findUnique({
       where: { email },
+    });
+  }
+
+  async findUserWithToken(emailToken: string): Promise<any> {
+    return await this.prismaService.user.findFirst({
+      where: { hashActivation: emailToken },
     });
   }
 }

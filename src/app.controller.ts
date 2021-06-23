@@ -6,6 +6,7 @@ import {
   Request,
   Body,
   UseFilters,
+  Param,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { AppService } from './app.service';
@@ -31,10 +32,14 @@ export class AppController {
     return this.authService.signIn(req.user);
   }
 
-  //@UseGuards(LocalAuthGuard)
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto): Promise<any> {
     return this.authService.signUp(createUserDto);
+  }
+
+  @Post('confirm/:tokenEmail')
+  confirm(@Param('tokenEmail') tokenEmail: string){
+    return this.authService.confirmEmail(tokenEmail);
   }
 
   @UseGuards(JwtAuthGuard)

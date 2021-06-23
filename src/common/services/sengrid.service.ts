@@ -12,8 +12,8 @@ export class SengridService {
     const msg = {
       to: email,
       from: 'diana@ravn.co',
-      subject: 'Confirm email',
-      text: `Link to confirm email: http://localhost:3000/users/${tokenEmail}/confirm`,
+      subject: 'Confirmation email to bookstore',
+      text: `Link to confirm email: http://localhost:3000/confirm/${tokenEmail}`,
     };
 
     this.sendgridClient
