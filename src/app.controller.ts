@@ -38,7 +38,7 @@ export class AppController {
   }
 
   @Post('confirm/:tokenEmail')
-  confirm(@Param('tokenEmail') tokenEmail: string){
+  confirm(@Param('tokenEmail') tokenEmail: string) {
     return this.authService.confirmEmail(tokenEmail);
   }
 
@@ -48,8 +48,6 @@ export class AppController {
     // console.log('body', req)
     return req.user;
   }
-
-  
 
   // @Get('/')
   // getHello() {

@@ -45,9 +45,9 @@ export class UsersService {
     });
   }
 
-  async findUserWithToken(emailToken: string): Promise<any> {
-    return await this.prismaService.user.findFirst({
-      where: { hashActivation: emailToken },
-    });
-  }
+  // async findUserWithToken(emailToken: string): Promise<any> {
+  //   return await this.prismaService.user.findFirst({
+  //     where: { hashActivation: emailToken },
+  //   });
+  // }
 }
