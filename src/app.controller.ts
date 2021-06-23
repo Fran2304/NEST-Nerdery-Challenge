@@ -14,7 +14,6 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { CreateUserDto } from './users/dto/create-user.dto';
-import { UserDto } from './users/dto/user.dto';
 import { UsersService } from './users/users.service';
 
 @Controller()
@@ -31,6 +30,12 @@ export class AppController {
     return this.authService.signIn(req.user);
   }
 
+  // //@UseGuards(LocalAuthGuard)
+  // @Post('signup')
+  // async signup(@Body() createUserDto: CreateUserDto): Promise<any> {
+  //   return this.authService.signUp(createUserDto);
+  // }
+
   //@UseGuards(LocalAuthGuard)
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto): Promise<any> {
@@ -43,11 +48,4 @@ export class AppController {
     // console.log('body', req)
     return req.user;
   }
-
-  
-
-  // @Get('/')
-  // getHello() {
-  //   return this.appService.getHello();
-  // }
 }

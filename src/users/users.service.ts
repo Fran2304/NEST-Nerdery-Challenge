@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { UserDto } from './dto/user.dto';
 
 const prisma = new PrismaClient();
 
@@ -22,7 +23,7 @@ export class UsersService {
     return hashed;
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+  async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
     const passwordHashed = await this.generatePassword(createUserDto.password);
     return await prisma.user.create({
       data: {
@@ -36,7 +37,7 @@ export class UsersService {
     });
   }
 
-  async findOne(email: string): Promise<any> {
+  async findOne(email: string): Promise<CreateUserDto> {
     return await this.prismaService.user.findUnique({
       where: { email },
     });

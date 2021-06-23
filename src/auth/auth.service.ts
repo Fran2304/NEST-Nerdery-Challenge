@@ -6,6 +6,11 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { DataUserDto } from './dto/dataUser.dto';
+import { PayloadUserDto } from './dto/payload.dto';
+import { TokenDto } from './dto/token.dto';
+import { ResponseUserDto } from 'src/auth/dto/responseUser.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
@@ -30,36 +35,40 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const userStored = await this.userService.findOne(email);
-    
+
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
     );
-    //console.log('password', passwordChecked);
-    // console.log('passwordChecked', passwordChecked);
     if (userStored && passwordChecked) {
       const { password, email, ...result } = userStored;
 
       return result;
     }
-    
+
     return null;
   }
-  async createToken(user) {
-    const payload = { username: user.useranme, id: user.id };
+  async createToken(user): Promise<TokenDto> {
+    const payload = { username: user.username, id: user.id };
 
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  async signUp(dataRegister) {
-    const user = await this.userService.createUser(dataRegister)
-    return this.createToken(user)
+  async signUp(dataRegister: DataUserDto): Promise<ResponseUserDto> {
+    const user = await this.userService.createUser(dataRegister);
+    const token = await this.createToken(user);
+    const data = {
+      ...user,
+      jwtToke: token.access_token,
+    };
+    const formatedDate = plainToClass(ResponseUserDto, data);
+    return formatedDate;
   }
 
-  async signIn(user: any) {
+  async signIn(user: PayloadUserDto): Promise<TokenDto> {
     const payload = { username: user.username, sub: user.userId };
-    return this.createToken(payload)
+    return this.createToken(payload);
   }
 }
