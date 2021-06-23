@@ -5,10 +5,13 @@ import * as sgMail from '@sendgrid/mail';
 export class SengridService {
   private readonly sendgridClient;
   constructor() {
-    this.sendgridClient = sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+    this.sendgridClient = sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   }
 
-  sendMailOfConfirmationCode(email: string, tokenEmail: string) {
+  async sendMailOfConfirmationCode(
+    email: string,
+    tokenEmail: string,
+  ): Promise<void> {
     const msg = {
       to: email,
       from: 'diana@ravn.co',
@@ -16,9 +19,6 @@ export class SengridService {
       text: `Link to confirm email: http://localhost:3000/confirm/${tokenEmail}`,
     };
 
-    this.sendgridClient
-      .send(msg)
-      .then((message) => console.log(message))
-      .catch((err) => console.log(err));
+    this.sendgridClient.send(msg);
   }
 }

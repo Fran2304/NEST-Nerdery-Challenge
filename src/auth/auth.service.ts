@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -13,6 +14,11 @@ import { PrismaService } from 'src/common/services/prisma.service';
 import { User } from '@prisma/client';
 import { UserDto } from 'src/users/dto/user.dto';
 import { SigninUserDto } from 'src/users/dto/signin-user.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+
+enum PostgresErrorCode {
+  UniqueViolation = '23505',
+}
 
 @Injectable()
 export class AuthService {
@@ -61,16 +67,22 @@ export class AuthService {
   }
 
   async signUp(dataRegister) {
-    const confirmationCode = generateHash();
-    await this.sengridService.sendMailOfConfirmationCode(
-      dataRegister.email,
-      confirmationCode,
-    );
-    await this.userService.createUser(dataRegister, confirmationCode);
-    //return this.createToken(user);
-    return {
-      message: 'Check your email',
-    };
+    try {
+      const confirmationCode = generateHash();
+      await this.sengridService.sendMailOfConfirmationCode(
+        dataRegister.email,
+        confirmationCode,
+      );
+      await this.userService.createUser(dataRegister, confirmationCode);
+      return {
+        message: 'Check your email',
+      };
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new BadRequestException('User with that email already exists');
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   async confirmEmail(tokenEmail) {
@@ -80,7 +92,6 @@ export class AuthService {
   }
 
   async signIn(user: any) {
-    const payload = { username: user.username, sub: user.id };
-    return this.createToken(payload);
+    return this.createToken(user);
   }
 }

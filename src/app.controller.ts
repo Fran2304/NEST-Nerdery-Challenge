@@ -14,6 +14,7 @@ import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { CreateUserDto } from './users/dto/create-user.dto';
 import { SigninUserDto } from './users/dto/signin-user.dto';
 import { UsersService } from './users/users.service';
 
@@ -32,7 +33,7 @@ export class AppController {
   }
 
   @Post('signup')
-  async signup(@Body() body): Promise<any> {
+  async signup(@Body() body: CreateUserDto): Promise<any> {
     return this.authService.signUp(body);
   }
 
