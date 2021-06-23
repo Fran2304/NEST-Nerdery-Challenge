@@ -1,6 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -9,21 +14,52 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    const user = await this.userService.findOne(email);
-    //console.log('user', user)
-    if (user && user.password === password) {
-      const { password, email, ...result } = user;
-      return result;
+  async checkPassword(
+    passwordSent: string,
+    passwordStored: string,
+  ): Promise<boolean> {
+    if (!passwordSent) {
+      throw new UnprocessableEntityException('Password cant be empty');
     }
-    return null;
+    const IsPasswordMatching = await bcrypt.compare(
+      passwordSent,
+      passwordStored,
+    );
+    return IsPasswordMatching;
   }
 
-  async login(user: any) {
+  async validateUser(email: string, password: string) {
+    const userStored = await this.userService.findOne(email);
+    
+    const passwordChecked = await this.checkPassword(
+      password,
+      userStored.password,
+    );
+    //console.log('password', passwordChecked);
+    // console.log('passwordChecked', passwordChecked);
+    if (userStored && passwordChecked) {
+      const { password, email, ...result } = userStored;
+
+      return result;
+    }
+    
+    return null;
+  }
+  async createToken(user) {
     const payload = { username: user.useranme, id: user.id };
 
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async signUp(dataRegister) {
+    const user = await this.userService.createUser(dataRegister)
+    return this.createToken(user)
+  }
+
+  async signIn(user: any) {
+    const payload = { username: user.username, sub: user.userId };
+    return this.createToken(payload)
   }
 }

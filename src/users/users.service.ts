@@ -1,59 +1,46 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnprocessableEntityException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaClient } from '@prisma/client';
 import { UserDto } from './dto/user.dto';
 import { SengridService } from 'src/helpers/sengrid.service';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/common/prisma/prisma.service';
 
-const prisma = new PrismaClient();
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly sengridService: SengridService) {}
-  private readonly users = [
-    {
-      id: 1,
-      useranme: 'diana98',
-      email: 'diana98@test.com',
-      password: 'password',
-    },
-    {
-      id: 2,
-      useranme: 'fran',
-      email: 'fran@test.com',
-      password: 'password',
-    },
-  ];
+  constructor(
+    private readonly sengridService: SengridService,
+    private prismaService: PrismaService){}
 
   getUsers() {
-    return this.users;
+    return this.prismaService.user.findMany();
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
-    //console.log('createUserDto', createUserDto)
+  async generatePassword(plainPassword: string): Promise<string> {
+    if (!plainPassword) {
+      throw new UnprocessableEntityException('Password cant be empty ');
+    }
+    const hashed = await bcrypt.hash(plainPassword, 10);
+    return hashed;
+  }
 
-    const createdUser = await prisma.user.create({
+  async createUser(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    const passwordHashed = await this.generatePassword(createUserDto.password);
+    return await this.prismaService.user.create({
       data: {
         username: createUserDto.username,
         email: createUserDto.email,
-        password: createUserDto.password,
-        active: true,
+        password: passwordHashed,
+        firstName: '',
+        lastName: '',
+        role: 'CLIENT',
       },
     });
-
-    if (!createdUser) {
-      throw new UnprocessableEntityException('User cant be created');
-    }
-
-    return createdUser;
   }
 
   async findOne(email: string): Promise<any> {
-    return this.users.find((user) => user.email === email);
+    return await this.prismaService.user.findUnique({
+      where: { email },
+    });
   }
 }

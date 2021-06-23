@@ -13,5 +13,5 @@ export class UserDto {
   emailVerified: boolean;
   username?: string;
   role?: Role;
-  active: boolean;
+  active?: boolean;
 }
