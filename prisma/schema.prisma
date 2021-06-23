@@ -41,13 +41,6 @@ model User {
   shoppingCards ShoppingCard[] 
 }
 
-model Token {
-  id    Int     @default(autoincrement()) @id
-  token String
-  type TypeToken  @default(EMAIL)
-  email String
-}
-
 model Author {
   id Int @default(autoincrement()) @id
   fullName String @map(name: "full_name")
