@@ -2,28 +2,16 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/common/prisma/prisma.service';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      id: 1,
-      useranme: 'diana98',
-      email: 'diana98@test.com',
-      password: 'password',
-    },
-    {
-      id: 2,
-      useranme: 'fran',
-      email: 'fran@test.com',
-      password: '$2b$10$.wRt61hw8SJKnYDCqr1fluVeY01Y7LDCALbSweUDA7/xkdm.AF/RW',
-    },
-  ];
+  constructor(private prismaService: PrismaService) {}
 
   getUsers() {
-    return this.users;
+    return this.prismaService.user.findMany();
   }
 
   async generatePassword(plainPassword: string): Promise<string> {
@@ -35,9 +23,8 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<CreateUserDto> {
-    //console.log('createUserDto', createUserDto)
     const passwordHashed = await this.generatePassword(createUserDto.password);
-    const createdUser = await prisma.user.create({
+    return await prisma.user.create({
       data: {
         username: createUserDto.username,
         email: createUserDto.email,
@@ -47,15 +34,11 @@ export class UsersService {
         role: 'CLIENT',
       },
     });
-
-    if (!createdUser) {
-      throw new UnprocessableEntityException('User cant be created');
-    }
-    console.log(createdUser);
-    return createdUser;
   }
 
   async findOne(email: string): Promise<any> {
-    return this.users.find((user) => user.email === email);
+    return await this.prismaService.user.findUnique({
+      where: { email },
+    });
   }
 }

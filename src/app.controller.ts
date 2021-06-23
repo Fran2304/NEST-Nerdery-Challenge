@@ -25,10 +25,16 @@ export class AppController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(@Request() req) {
-    console.log('body', req);
-    return this.authService.login(req.user);
+  @Post('signin')
+  async signin(@Request() req) {
+    //console.log('body', req.user);
+    return this.authService.signIn(req.user);
+  }
+
+  //@UseGuards(LocalAuthGuard)
+  @Post('signup')
+  async signup(@Body() createUserDto: CreateUserDto): Promise<any> {
+    return this.authService.signUp(createUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -38,10 +44,7 @@ export class AppController {
     return req.user;
   }
 
-  @Post('signup')
-  async signup(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
-    return this.userService.createUser(createUserDto);
-  }
+  
 
   // @Get('/')
   // getHello() {
