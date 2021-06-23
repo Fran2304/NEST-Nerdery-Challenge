@@ -1,9 +1,12 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { UserDto } from './dto/user.dto';
+import { UpdateInfoDto } from './dto/update-user.dto';
+import { plainToClass } from 'class-transformer';
+import { ResponseUpdateInfoDto } from './dto/response-update.dto';
 
 const prisma = new PrismaClient();
 
@@ -41,5 +44,18 @@ export class UsersService {
     return await this.prismaService.user.findUnique({
       where: { email },
     });
+  }
+
+  async updateUser(
+    userId: number,
+    input: UpdateInfoDto,
+  ): Promise<UpdateInfoDto> {
+    const userUpdated = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...input,
+      },
+    });
+    return plainToClass(ResponseUpdateInfoDto, userUpdated);
   }
 }

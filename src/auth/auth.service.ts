@@ -61,7 +61,7 @@ export class AuthService {
     const token = await this.createToken(user);
     const data = {
       ...user,
-      jwtToke: token.access_token,
+      jwtToken: token.access_token,
     };
     const formatedDate = plainToClass(ResponseUserDto, data);
     return formatedDate;
