@@ -10,8 +10,12 @@ export class UserDto {
   @Exclude()
   password: string;
 
+  @Exclude()
   emailVerified: boolean;
   username?: string;
   role?: Role;
+  @Exclude()
   active?: boolean;
+
+  token?: string;
 }

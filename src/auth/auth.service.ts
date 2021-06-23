@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -9,6 +10,9 @@ import * as bcrypt from 'bcrypt';
 import { SengridService } from 'src/common/services/sengrid.service';
 import { generateHash } from 'src/common/helpers/generatorEmailHash';
 import { PrismaService } from 'src/common/services/prisma.service';
+import { User } from '@prisma/client';
+import { UserDto } from 'src/users/dto/user.dto';
+import { SigninUserDto } from 'src/users/dto/signin-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +20,6 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private sengridService: SengridService,
-    private prismaService: PrismaService,
   ) {}
 
   async checkPassword(
@@ -33,23 +36,22 @@ export class AuthService {
     return IsPasswordMatching;
   }
 
-  async validateUser(email: string, password: string) {
+  async validateUser(email: string, password: string): Promise<UserDto> {
     const userStored = await this.userService.findOne(email);
 
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
     );
-    //console.log('password', passwordChecked);
-    // console.log('passwordChecked', passwordChecked);
+
     if (userStored && passwordChecked) {
       const { password, email, ...result } = userStored;
-
       return result;
     }
 
-    return null;
+    throw new BadRequestException();
   }
+
   async createToken(user) {
     const payload = { username: user.useranme, id: user.id };
 
@@ -78,7 +80,7 @@ export class AuthService {
   }
 
   async signIn(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+    const payload = { username: user.username, sub: user.id };
     return this.createToken(payload);
   }
 }
