@@ -30,16 +30,16 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const userStored = await this.userService.findOne(email);
-    //console.log('userStored', userStored)
+    
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
     );
-    // console.log('password', passwordChecked);
+    //console.log('password', passwordChecked);
     // console.log('passwordChecked', passwordChecked);
-    if (passwordChecked) {
+    if (userStored && passwordChecked) {
       const { password, email, ...result } = userStored;
-      //console.log('result', result)
+
       return result;
     }
     
@@ -59,13 +59,7 @@ export class AuthService {
   }
 
   async signIn(user: any) {
-    console.log('user', user)
-    const userStored = await this.validateUser(user.email, user.password)
-    
-    const payload = { username: userStored.useranme, id: userStored.id };
-    console.log('payload', payload)
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    const payload = { username: user.username, sub: user.userId };
+    return this.createToken(payload)
   }
 }
