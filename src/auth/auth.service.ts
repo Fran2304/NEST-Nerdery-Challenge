@@ -1,17 +1,31 @@
 import {
+  BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { SengridService } from 'src/common/services/sengrid.service';
+import { generateHash } from 'src/common/helpers/generatorEmailHash';
+import { PrismaService } from 'src/common/services/prisma.service';
+import { User } from '@prisma/client';
+import { UserDto } from 'src/users/dto/user.dto';
+import { SigninUserDto } from 'src/users/dto/signin-user.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+
+enum PostgresErrorCode {
+  UniqueViolation = '23505',
+}
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
+    private sengridService: SengridService,
   ) {}
 
   async checkPassword(
@@ -28,23 +42,22 @@ export class AuthService {
     return IsPasswordMatching;
   }
 
-  async validateUser(email: string, password: string) {
+  async validateUser(email: string, password: string): Promise<UserDto> {
     const userStored = await this.userService.findOne(email);
-    
+
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
     );
-    //console.log('password', passwordChecked);
-    // console.log('passwordChecked', passwordChecked);
+
     if (userStored && passwordChecked) {
       const { password, email, ...result } = userStored;
-
       return result;
     }
-    
-    return null;
+
+    throw new BadRequestException();
   }
+
   async createToken(user) {
     const payload = { username: user.useranme, id: user.id };
 
@@ -54,12 +67,31 @@ export class AuthService {
   }
 
   async signUp(dataRegister) {
-    const user = await this.userService.createUser(dataRegister)
-    return this.createToken(user)
+    try {
+      const confirmationCode = generateHash();
+      await this.sengridService.sendMailOfConfirmationCode(
+        dataRegister.email,
+        confirmationCode,
+      );
+      await this.userService.createUser(dataRegister, confirmationCode);
+      return {
+        message: 'Check your email',
+      };
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new BadRequestException('User with that email already exists');
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
+  }
+
+  async confirmEmail(tokenEmail) {
+    const user = await this.userService.findUserWithToken(tokenEmail);
+    if (!user) throw new NotFoundException('Not found User');
+    return this.createToken(user);
   }
 
   async signIn(user: any) {
-    const payload = { username: user.username, sub: user.userId };
-    return this.createToken(payload)
+    return this.createToken(user);
   }
 }

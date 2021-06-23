@@ -6,6 +6,7 @@ import {
   Request,
   Body,
   UseFilters,
+  Param,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { AppService } from './app.service';
@@ -14,7 +15,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { CreateUserDto } from './users/dto/create-user.dto';
-import { UserDto } from './users/dto/user.dto';
+import { SigninUserDto } from './users/dto/signin-user.dto';
 import { UsersService } from './users/users.service';
 
 @Controller()
@@ -31,10 +32,14 @@ export class AppController {
     return this.authService.signIn(req.user);
   }
 
-  //@UseGuards(LocalAuthGuard)
   @Post('signup')
-  async signup(@Body() createUserDto: CreateUserDto): Promise<any> {
-    return this.authService.signUp(createUserDto);
+  async signup(@Body() body: CreateUserDto): Promise<any> {
+    return this.authService.signUp(body);
+  }
+
+  @Post('confirm/:tokenEmail')
+  confirm(@Param('tokenEmail') tokenEmail: string){
+    return this.authService.confirmEmail(tokenEmail);
   }
 
   @UseGuards(JwtAuthGuard)
