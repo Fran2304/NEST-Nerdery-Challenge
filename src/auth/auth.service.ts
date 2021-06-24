@@ -6,19 +6,17 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { SengridService } from 'src/common/services/sengrid.service';
-import { generateHash } from 'src/common/helpers/generatorEmailHash';
+import { SengridService } from '../common/services/sengrid.service';
+import { generateHash } from '../common/helpers/generator-hash.helper';
 import { TokenDto } from './dto/token.dto';
 import { DataUserDto } from './dto/dataUser.dto';
 import { PayloadUserDto } from './dto/payload.dto';
-import { UserDto } from 'src/users/dto/user.dto';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-
-enum PostgresErrorCode {
-  UniqueViolation = '23505',
-}
+import { UserDto } from '../users/dto/user.dto';
+import { ResponseUpdateInfoDto } from 'users/dto/responseUser.dto';
+import { plainToClass } from 'class-transformer';
+import { UpdateInfoDto } from 'users/dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -68,7 +66,7 @@ export class AuthService {
   //   }
 
   async createToken(user): Promise<TokenDto> {
-    const payload = { username: user.username, id: user.id };
+    const payload = { id: user.id, username: user.username, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -101,5 +99,10 @@ export class AuthService {
 
   async signIn(user: PayloadUserDto) {
     return this.createToken(user);
+  }
+
+  async signOut(userId: number): Promise<UpdateInfoDto> {
+    const userLogOut = await this.userService.signOut(userId);
+    return plainToClass(ResponseUpdateInfoDto, userLogOut);
   }
 }

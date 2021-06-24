@@ -5,8 +5,8 @@ import { CreateBookDto } from './dto/createBook.dto';
 @Controller('books')
 export class BooksController {
   constructor(private readonly bookService: BooksService) {}
-  @Post('book')
-  createBook(@Body() createProduct: CreateBookDto) {
-    return this.bookService.createBook(createProduct);
-  }
+  // @Post('book')
+  // createBook(@Body() createProduct: CreateBookDto) {
+  //   return this.bookService.createBook(createProduct);
+  // }
 }

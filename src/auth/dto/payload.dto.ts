@@ -9,4 +9,8 @@ export class PayloadUserDto {
   @IsNotEmpty()
   @IsString()
   userId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  role: string;
 }

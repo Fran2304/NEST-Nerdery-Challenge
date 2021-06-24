@@ -1,9 +1,7 @@
-/* eslint-disable prettier/prettier */
-
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class TokenDto {
+export class CreateAuthorDto {
   @IsNotEmpty()
   @IsString()
-  access_token: string;
+  fullName: string;
 }
