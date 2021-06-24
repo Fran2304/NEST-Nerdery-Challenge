@@ -10,9 +10,9 @@ import {
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { UsersService } from './users.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateInfoDto } from './dto/update-user.dto';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { RoleUserDto } from './dto/role-user.dto';
 
 @Controller('users')
@@ -25,7 +25,6 @@ export class UsersController {
     return this.usersService.updateUser(req.user.id, { ...req.body });
   }
 
-  
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()

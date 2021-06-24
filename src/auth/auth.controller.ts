@@ -7,7 +7,7 @@ import {
   Param,
   Get,
 } from '@nestjs/common';
-import { InputInfoUserDto } from 'src/users/dto/input-user.dto';
+import { InputInfoUserDto } from '../users/dto/input-user.dto';
 import { AuthService } from './auth.service';
 import { MessageDto } from './dto/message.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';

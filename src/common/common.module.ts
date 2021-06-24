@@ -4,6 +4,6 @@ import { SengridService } from './services/sengrid.service';
 
 @Module({
   providers: [PrismaService, SengridService],
-  exports: [PrismaService, SengridService]
+  exports: [PrismaService, SengridService],
 })
 export class CommonModule {}

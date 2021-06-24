@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Author } from '@prisma/client';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from '../common/services/prisma.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 
 @Injectable()
@@ -15,7 +15,10 @@ export class AuthorService {
     const author = await this.prismaService.author.findUnique({
       where: { id: Number(idAuthor) },
     });
-    if (!author) throw new NotFoundException(`Author not found  with ${idAuthor} id`);
+    if (!author)
+      throw new NotFoundException(
+        `There's not an author with this Id: ${idAuthor}`,
+      );
     return author;
   }
 

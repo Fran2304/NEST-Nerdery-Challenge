@@ -1,9 +1,8 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
-import { SengridService } from 'src/common/services/sengrid.service';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from '../common/services/prisma.service';
 import { plainToClass } from 'class-transformer';
 import { UpdateInfoDto } from './dto/update-user.dto';
 import { ResponseUpdateInfoDto } from './dto/responseUser.dto';
@@ -15,8 +14,8 @@ export class UsersService {
     try {
       const users = await this.prismaService.user.findMany();
       return users;
-    } catch(e) {
-      console.log(e.message)
+    } catch (e) {
+      console.log(e.message);
     }
   }
 
