@@ -11,8 +11,13 @@ import { ResponseUpdateInfoDto } from './dto/responseUser.dto';
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
-  getUsers() {
-    return this.prismaService.user.findMany();
+  async getUsers() {
+    try {
+      const users = await this.prismaService.user.findMany();
+      return users;
+    } catch(e) {
+      console.log(e.message)
+    }
   }
 
   async generatePassword(plainPassword: string): Promise<string> {
@@ -64,5 +69,13 @@ export class UsersService {
       },
     });
     return plainToClass(ResponseUpdateInfoDto, userUpdated);
+  }
+
+  async updateRole(idUser: string, newRole): Promise<UserDto> {
+    const user = await this.prismaService.user.update({
+      where: { id: Number(idUser) },
+      data: { role: newRole.role },
+    });
+    return plainToClass(UserDto, user);
   }
 }

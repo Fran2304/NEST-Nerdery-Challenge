@@ -16,10 +16,6 @@ import { PayloadUserDto } from './dto/payload.dto';
 import { UserDto } from 'src/users/dto/user.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
-enum PostgresErrorCode {
-  UniqueViolation = '23505',
-}
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -61,7 +57,7 @@ export class AuthService {
   }
 
   async createToken(user): Promise<TokenDto> {
-    const payload = { username: user.username, id: user.id };
+    const payload = { id: user.id, username: user.username, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
     };
