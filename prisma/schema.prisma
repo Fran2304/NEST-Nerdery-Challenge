@@ -60,10 +60,10 @@ model Book {
   title String  @db.VarChar(100) 
   description String  @db.VarChar(255)
   yearPublished Int @map(name: "year_published")
-  quantity Int
+  quantity Int @default(0)
   price Decimal @db.Decimal(5,2)
   urlImage String @db.VarChar(255) @map(name: "url_image")
-  active Boolean
+  active Boolean @default(false)
 
   authorId Int @map(name: "author_id")
   author Author @relation(fields: [authorId], references: [id])
