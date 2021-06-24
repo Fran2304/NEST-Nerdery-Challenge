@@ -56,4 +56,10 @@ export class AppController {
   async update(@Request() req): Promise<UpdateInfoDto> {
     return this.userService.updateUser(req.user.id, { ...req.body });
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('logout')
+  async logout(@Request() req): Promise<UpdateInfoDto> {
+    return this.userService.signOut(req.user.id);
+  }
 }

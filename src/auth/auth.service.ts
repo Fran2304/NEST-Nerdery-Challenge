@@ -44,7 +44,6 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<UserDto> {
     const userStored = await this.userService.findOne(email);
-
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
@@ -59,6 +58,14 @@ export class AuthService {
 
     throw new BadRequestException();
   }
+
+  // // guard active
+  //   async isActive(active: boolean): Promise<UserDto> {
+  //     return await this.prismaService.user.findUnique({
+  //       where: { active },
+  //       data: {},
+  //     });
+  //   }
 
   async createToken(user): Promise<TokenDto> {
     const payload = { username: user.username, id: user.id };
