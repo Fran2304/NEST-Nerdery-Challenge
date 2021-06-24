@@ -4,7 +4,9 @@ import { UserDto } from './dto/user.dto';
 import { SengridService } from 'src/common/services/sengrid.service';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/common/services/prisma.service';
-
+import { plainToClass } from 'class-transformer';
+import { UpdateInfoDto } from './dto/update-user.dto';
+import { ResponseUpdateInfoDto } from './dto/responseUser.dto';
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
@@ -24,7 +26,7 @@ export class UsersService {
   async createUser(
     createUserDto: CreateUserDto,
     tokenEmail: string,
-  ): Promise<CreateUserDto> {
+  ): Promise<UserDto> {
     const passwordHashed = await this.generatePassword(createUserDto.password);
     return await this.prismaService.user.create({
       data: {
@@ -39,15 +41,28 @@ export class UsersService {
     });
   }
 
-  async findOne(email: string): Promise<any> {
+  async findOne(email: string): Promise<UserDto> {
     return await this.prismaService.user.findUnique({
       where: { email },
     });
   }
 
-  // async findUserWithToken(emailToken: string): Promise<any> {
-  //   return await this.prismaService.user.findFirst({
-  //     where: { hashActivation: emailToken },
-  //   });
-  // }
+  async findUserWithToken(emailToken: string): Promise<CreateUserDto> {
+    return await this.prismaService.user.findFirst({
+      where: { hashActivation: emailToken },
+    });
+  }
+
+  async updateUser(
+    userId: number,
+    input: UpdateInfoDto,
+  ): Promise<UpdateInfoDto> {
+    const userUpdated = await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        ...input,
+      },
+    });
+    return plainToClass(ResponseUpdateInfoDto, userUpdated);
+  }
 }

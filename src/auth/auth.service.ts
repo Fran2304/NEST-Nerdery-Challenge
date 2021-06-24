@@ -10,10 +10,10 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SengridService } from 'src/common/services/sengrid.service';
 import { generateHash } from 'src/common/helpers/generatorEmailHash';
-import { PrismaService } from 'src/common/services/prisma.service';
-import { User } from '@prisma/client';
+import { TokenDto } from './dto/token.dto';
+import { DataUserDto } from './dto/dataUser.dto';
+import { PayloadUserDto } from './dto/payload.dto';
 import { UserDto } from 'src/users/dto/user.dto';
-import { SigninUserDto } from 'src/users/dto/signin-user.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 enum PostgresErrorCode {
@@ -51,22 +51,23 @@ export class AuthService {
     );
 
     if (userStored && passwordChecked) {
-      const { password, email, ...result } = userStored;
-      return result;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // const { password, email, id, ...result } = userStored;
+      // console.log('result', result);
+      return userStored;
     }
 
     throw new BadRequestException();
   }
 
-  async createToken(user) {
-    const payload = { username: user.useranme, id: user.id };
-
+  async createToken(user): Promise<TokenDto> {
+    const payload = { username: user.username, id: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  async signUp(dataRegister) {
+  async signUp(dataRegister: DataUserDto) {
     try {
       const confirmationCode = generateHash();
       await this.sengridService.sendMailOfConfirmationCode(
@@ -91,7 +92,7 @@ export class AuthService {
     return this.createToken(user);
   }
 
-  async signIn(user: any) {
+  async signIn(user: PayloadUserDto) {
     return this.createToken(user);
   }
 }

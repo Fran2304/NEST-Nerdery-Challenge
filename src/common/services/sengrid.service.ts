@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
 
 @Injectable()
@@ -18,7 +18,6 @@ export class SengridService {
       subject: 'Confirmation email to bookstore',
       text: `Link to confirm email: http://localhost:3000/confirm/${tokenEmail}`,
     };
-
     this.sendgridClient.send(msg);
   }
 }
