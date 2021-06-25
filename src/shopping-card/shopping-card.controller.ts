@@ -20,6 +20,11 @@ export class ShoppingCardController {
     return this.shoppingService.getProductsPurchase(req.user.id);
   }
 
+  // @Get('paid')
+  // getPaidProducts() {
+  //   return this.shoppingService.getShoppingPaid();
+  // }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   buyProducts(@Request() req, @Body() status: ShoppingStatus) {

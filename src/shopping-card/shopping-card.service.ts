@@ -31,6 +31,22 @@ export class ShoppingCardService {
       itemsCard,
       shoppingCard.id,
     );
+    if (newStatus.status === 'PAID')
+      await this.getShoppingPaid(shoppingCard.id);
     return shoppingCard;
+  }
+
+  async getShoppingPaid(idShopping: number) {
+    const shoppingCard = await this.prismaService.shoppingCard.findFirst({
+      where: {
+        AND: [
+          {
+            id: idShopping,
+          },
+          { status: 'PAID' },
+        ],
+      },
+    });
+    await this.itemsService.getItemToPaid(shoppingCard.id);
   }
 }

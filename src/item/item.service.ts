@@ -3,9 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CardItem } from '@prisma/client';
+import { CardItem, Prisma } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { PrismaService } from 'common/services/prisma.service';
+import { async } from 'rxjs';
 import { ArrayCardItemsDto } from './dto/array-card-items.dto';
 import { CreateItemDto } from './dto/create-item.dto';
 import { ItemCardDto } from './dto/item-card.dto';
@@ -18,6 +19,11 @@ export class ItemService {
       where: { id: bookId },
     });
 
+    if (!book)
+      throw new NotFoundException(
+        `There's not an book with this Id: ${bookId}`,
+      );
+
     const { id, description, urlImage, active, ...rest } = book;
     return rest;
   }
@@ -28,11 +34,9 @@ export class ItemService {
   ): Promise<ItemCardDto> {
     const { count, bookId } = body;
     const book = await this.getBook(bookId);
-    // console.log('book', book.title);
-    if (!book)
-      throw new NotFoundException(
-        `There's not an book with this Id: ${bookId}`,
-      );
+    if (book.quantity < count) {
+      throw new BadRequestException(`The amount ${book.quantity} was exceeded`);
+    }
     if (book.quantity === 0) {
       throw new BadRequestException(`Stock sold out: ${book.title}`);
     }
@@ -74,5 +78,19 @@ export class ItemService {
           where: { id: item.id },
         }),
     );
+  }
+
+  async getItemToPaid(shoppingId: number) {
+    const items = await this.prismaService.cardItem.findMany({
+      where: { shoppingId },
+    });
+
+    return items.map(async (item) => {
+      const book = await this.getBook(item.bookId);
+      await this.prismaService.book.update({
+        where: { id: item.bookId },
+        data: { quantity: book.quantity - item.count },
+      });
+    });
   }
 }
