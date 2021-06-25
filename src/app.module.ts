@@ -9,10 +9,19 @@ import { CommonModule } from './common/common.module';
 import { AuthorService } from './author/author.service';
 import { AuthorController } from './author/author.controller';
 import { AuthorModule } from './author/author.module';
+import { ItemService } from './item/item.service';
+import { ItemModule } from './item/item.module';
+import { ItemController } from 'item/item.controller';
 
 @Module({
-  imports: [UsersModule, AuthModule, CommonModule, AuthorModule],
-  controllers: [AppController, AuthorController],
-  providers: [AppService, PrismaService, UsersService, AuthorService],
+  imports: [UsersModule, AuthModule, CommonModule, AuthorModule, ItemModule],
+  controllers: [AppController, AuthorController, ItemController],
+  providers: [
+    AppService,
+    PrismaService,
+    UsersService,
+    AuthorService,
+    ItemService,
+  ],
 })
 export class AppModule {}

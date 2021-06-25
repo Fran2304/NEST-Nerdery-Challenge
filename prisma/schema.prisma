@@ -61,23 +61,29 @@ model Book {
   description String  @db.VarChar(255)
   yearPublished Int @map(name: "year_published")
   quantity Int
-  price Decimal @db.Decimal(5,2)
+  price Float 
   urlImage String @db.VarChar(255) @map(name: "url_image")
   active Boolean
 
   authorId Int @map(name: "author_id")
   author Author @relation(fields: [authorId], references: [id])
   categories Category[]  @relation(references: [id])
+  cards CardItem[]
 }
 
 model CardItem {
   id Int @default(autoincrement()) @id
-  quantiy Int
-  subtotal Decimal @db.Decimal(5,2) 
+  count Int
+  subtotal Float 
   dateCreated DateTime @default(now()) @db.Timestamp(6) @map(name: "date_created") 
 
-  shoppingId Int @map(name: "shopping_id")
-  ShoppingCard ShoppingCard @relation(fields: [shoppingId], references: [id])
+  userId Int? @map(name: "user_id") 
+
+  bookId Int @map(name: "book_id")
+  book Book @relation(fields: [bookId], references: [id])
+
+  shoppingId Int? @map(name: "shopping_id")
+  ShoppingCard ShoppingCard? @relation(fields: [shoppingId], references: [id])
 }
 
 model ShoppingCard {
