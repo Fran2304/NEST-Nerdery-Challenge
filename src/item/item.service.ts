@@ -1,6 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CardItem } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { PrismaService } from 'common/services/prisma.service';
+import { ArrayCardItemsDto } from './dto/array-card-items.dto';
 import { CreateItemDto } from './dto/create-item.dto';
 import { ItemCardDto } from './dto/item-card.dto';
 
@@ -16,7 +22,10 @@ export class ItemService {
     return rest;
   }
 
-  async createCardItem(userId: number, body: CreateItemDto): Promise<any> {
+  async createCardItem(
+    userId: number,
+    body: CreateItemDto,
+  ): Promise<ItemCardDto> {
     const { count, bookId } = body;
     const book = await this.getBook(bookId);
     // console.log('book', book.title);
@@ -25,8 +34,8 @@ export class ItemService {
         `There's not an book with this Id: ${bookId}`,
       );
     if (book.quantity === 0) {
-      throw new BadRequestException(`Stock sold out: ${book.title}`)
-    } 
+      throw new BadRequestException(`Stock sold out: ${book.title}`);
+    }
     const cardItem = await this.prismaService.cardItem.create({
       data: {
         count,
@@ -36,7 +45,34 @@ export class ItemService {
       },
     });
 
-    const cardWithBook = { ...book, ...cardItem }
-    return plainToClass(ItemCardDto, cardWithBook)
+    const cardWithBook = { ...book, ...cardItem };
+    return plainToClass(ItemCardDto, cardWithBook);
+  }
+
+  async getCardItemFromUser(userId: number): Promise<ArrayCardItemsDto[]> {
+    const cardItems = await this.prismaService.cardItem.findMany({
+      where: {
+        AND: [
+          {
+            userId: userId,
+          },
+          { shoppingId: null },
+        ],
+      },
+    });
+    return plainToClass(ArrayCardItemsDto, cardItems);
+  }
+
+  updateCardItemWithShoppingId(
+    cardItems: ArrayCardItemsDto[],
+    shoppingId: number,
+  ) {
+    return cardItems.map(
+      async (item) =>
+        await this.prismaService.cardItem.update({
+          data: { shoppingId },
+          where: { id: item.id },
+        }),
+    );
   }
 }

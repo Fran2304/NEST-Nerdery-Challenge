@@ -12,16 +12,20 @@ import { AuthorModule } from './author/author.module';
 import { ItemService } from './item/item.service';
 import { ItemModule } from './item/item.module';
 import { ItemController } from 'item/item.controller';
+import { ShoppingCardService } from './shopping-card/shopping-card.service';
+import { ShoppingCardController } from './shopping-card/shopping-card.controller';
+import { ShoppingCardModule } from './shopping-card/shopping-card.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, CommonModule, AuthorModule, ItemModule],
-  controllers: [AppController, AuthorController, ItemController],
+  imports: [UsersModule, AuthModule, CommonModule, AuthorModule, ItemModule, ShoppingCardModule],
+  controllers: [AppController, AuthorController, ItemController, ShoppingCardController],
   providers: [
     AppService,
     PrismaService,
     UsersService,
     AuthorService,
     ItemService,
+    ShoppingCardService,
   ],
 })
 export class AppModule {}
