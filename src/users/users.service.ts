@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
@@ -6,6 +10,7 @@ import { PrismaService } from '../common/services/prisma.service';
 import { plainToClass } from 'class-transformer';
 import { UpdateInfoDto } from './dto/update-user.dto';
 import { ResponseUpdateInfoDto } from './dto/responseUser.dto';
+import { InputInfoUserDto } from './dto/input-user.dto';
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
@@ -21,14 +26,14 @@ export class UsersService {
 
   async generatePassword(plainPassword: string): Promise<string> {
     if (!plainPassword) {
-      throw new UnprocessableEntityException('Password cant be empty ');
+      throw new BadRequestException(`Password can't be empty`);
     }
     const hashed = await bcrypt.hash(plainPassword, 10);
     return hashed;
   }
 
   async createUser(
-    createUserDto: CreateUserDto,
+    createUserDto: InputInfoUserDto,
     tokenEmail: string,
   ): Promise<UserDto> {
     const passwordHashed = await this.generatePassword(createUserDto.password);

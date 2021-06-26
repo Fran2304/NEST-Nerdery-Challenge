@@ -4,9 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CardItem, Prisma } from '@prisma/client';
-import { BooksService } from 'books/books.service';
+import { BooksService } from '../books/books.service';
 import { plainToClass } from 'class-transformer';
-import { PrismaService } from 'common/services/prisma.service';
+import { PrismaService } from '../common/services/prisma.service';
 import { ArrayCardItemsDto } from './dto/array-card-items.dto';
 import { CreateItemDto } from './dto/create-item.dto';
 import { ItemCardDto } from './dto/item-card.dto';

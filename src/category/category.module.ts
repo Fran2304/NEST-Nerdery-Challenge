@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CommonModule } from 'common/common.module';
+import { CommonModule } from '../common/common.module';
 import { CategoryController } from './category.controller';
 import { CategoryService } from './category.service';
 

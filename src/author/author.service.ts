@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Author } from '@prisma/client';
-import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
-import { paginatedHelper } from 'common/helpers/paginated.helper';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { paginatedHelper } from '../common/helpers/paginated.helper';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 

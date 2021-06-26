@@ -9,12 +9,11 @@ import {
   Delete,
 } from '@nestjs/common';
 import { Book } from '@prisma/client';
-import { JwtAuthGuard } from 'auth/jwt-auth.guard';
-import { Roles } from 'common/decorators/roles.decorator';
-import { Role } from 'common/enums/role.enum';
-import { RolesGuard } from 'common/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { BooksService } from './books.service';
-import { BookStateDto } from './dto/bookState.dto';
 import { ResponseBookDto } from './dto/response-book.dto';
 import { UpdateBookDto } from './dto/updatebook.dto';
 
