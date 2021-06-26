@@ -15,6 +15,12 @@ import { BooksService } from 'books/books.service';
 import { CategoryController } from 'category/category.controller';
 import { BooksController } from 'books/books.controller';
 import { CategoryService } from 'category/category.service';
+import { ItemService } from './item/item.service';
+import { ItemModule } from './item/item.module';
+import { ItemController } from 'item/item.controller';
+import { ShoppingCardService } from './shopping-card/shopping-card.service';
+import { ShoppingCardController } from './shopping-card/shopping-card.controller';
+import { ShoppingCardModule } from './shopping-card/shopping-card.module';
 
 @Module({
   imports: [
@@ -24,12 +30,16 @@ import { CategoryService } from 'category/category.service';
     AuthorModule,
     CategoryModule,
     BooksModule,
+    ItemModule, 
+    ShoppingCardModule
   ],
   controllers: [
     AppController,
     AuthorController,
     CategoryController,
     BooksController,
+    ItemController, 
+    ShoppingCardController
   ],
   providers: [
     AppService,
@@ -38,6 +48,8 @@ import { CategoryService } from 'category/category.service';
     AuthorService,
     BooksService,
     CategoryService,
+    ItemService,
+    ShoppingCardService,
   ],
 })
 export class AppModule {}

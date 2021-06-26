@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Author } from '@prisma/client';
+import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
+import { paginatedHelper } from 'common/helpers/paginated.helper';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 
@@ -7,8 +9,12 @@ import { CreateAuthorDto } from './dto/create-author.dto';
 export class AuthorService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getAuthors(): Promise<Author[]> {
-    return await this.prismaService.author.findMany();
+  async getAuthors(paginationQuery: PaginationQueryDto): Promise<Author[]> {
+    const { page, perPage } = paginationQuery;
+    const paginationParams = paginatedHelper({ page, perPage })
+    return await this.prismaService.author.findMany({
+      ...paginationParams,
+    });
   }
 
   async getAuthor(idAuthor: string): Promise<Author> {

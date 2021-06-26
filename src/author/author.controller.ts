@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { Author } from '@prisma/client';
+import { paginatedHelper } from 'common/helpers/paginated.helper';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
@@ -12,8 +13,8 @@ export class AuthorController {
   constructor(private readonly authorService: AuthorService) {}
 
   @Get()
-  getAuthors(): Promise<Author[]> {
-    return this.authorService.getAuthors();
+  getAuthors(@Query() paginationQuery): Promise<Author[]> {
+    return this.authorService.getAuthors(paginationQuery);
   }
 
   @Get('/:idAuthor')

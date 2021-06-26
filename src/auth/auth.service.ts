@@ -48,9 +48,6 @@ export class AuthService {
     );
 
     if (userStored && passwordChecked) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      // const { password, email, id, ...result } = userStored;
-      // console.log('result', result);
       return userStored;
     }
 
