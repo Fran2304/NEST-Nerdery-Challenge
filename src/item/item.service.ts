@@ -80,7 +80,7 @@ export class ItemService {
     );
   }
 
-  async getItemToPaid(shoppingId: number) {
+  async reduceStockToBook(shoppingId: number) {
     const items = await this.prismaService.cardItem.findMany({
       where: { shoppingId },
     });

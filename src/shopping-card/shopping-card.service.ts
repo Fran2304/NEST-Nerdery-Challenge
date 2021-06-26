@@ -1,4 +1,3 @@
-import { Status } from '.prisma/client';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'common/services/prisma.service';
 import { ItemService } from 'item/item.service';
@@ -47,6 +46,6 @@ export class ShoppingCardService {
         ],
       },
     });
-    await this.itemsService.getItemToPaid(shoppingCard.id);
+    await this.itemsService.reduceStockToBook(shoppingCard.id);
   }
 }
