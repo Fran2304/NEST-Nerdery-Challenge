@@ -1,12 +1,10 @@
 /* eslint-disable prettier/prettier */
+import { CreateAuthorDto } from 'author/dto/create-author.dto';
+import { Category } from '@prisma/client';
+import { Author } from '@prisma/client';
 import { Exclude } from 'class-transformer';
-import {
-  IsDecimal,
-  isDecimal,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-} from 'class-validator';
+
+import { IsDecimal, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class CreateBookDto {
   @IsNotEmpty()
   @IsString()
@@ -20,15 +18,17 @@ export class CreateBookDto {
   readonly yearPublished?: number;
 
   @IsNumber()
-  @IsDecimal()
   readonly price: number;
 
   @IsNotEmpty()
-  @IsNotEmpty()
+  @IsString()
   readonly urlImage: string;
+  // readonly authorId: number;
+  @IsNotEmpty()
+  @IsString()
+  readonly authorName: string;
 
-  readonly quantity: number;
-
-  readonly author: string;
-  readonly category: string[];
+  @IsNotEmpty()
+  @IsString()
+  readonly categoryName: string;
 }

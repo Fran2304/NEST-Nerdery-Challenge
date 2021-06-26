@@ -4,24 +4,32 @@ import {
   IsDecimal,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
 } from 'class-validator';
-export class BookDto {
+export class UpdateBookDto {
+  @IsOptional()
   readonly title: string;
 
+  @IsOptional()
   readonly description: string;
 
+  @IsOptional()
   readonly yearPublished?: number;
 
+  @IsOptional()
   readonly quantity: number;
 
+  @IsOptional()
   readonly price: number;
 
+  @IsOptional()
   readonly urlImage: string;
 
-  readonly active: boolean;
+  @IsOptional()
+  readonly authorName: string;
 
-  readonly author: string;
-  readonly categories: string[];
+  @IsOptional()
+  readonly categoryName: string;
 }
