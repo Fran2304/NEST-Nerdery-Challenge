@@ -14,9 +14,10 @@ import { TokenDto } from './dto/token.dto';
 import { DataUserDto } from './dto/dataUser.dto';
 import { PayloadUserDto } from './dto/payload.dto';
 import { UserDto } from '../users/dto/user.dto';
-import { ResponseUpdateInfoDto } from 'users/dto/responseUser.dto';
+import { ResponseUpdateInfoDto } from '../users/dto/responseUser.dto';
 import { plainToClass } from 'class-transformer';
-import { UpdateInfoDto } from 'users/dto/update-user.dto';
+import { UpdateInfoDto } from '../users/dto/update-user.dto';
+import { InputInfoUserDto } from 'users/dto/input-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,9 +31,6 @@ export class AuthService {
     passwordSent: string,
     passwordStored: string,
   ): Promise<boolean> {
-    if (!passwordSent) {
-      throw new UnprocessableEntityException('Password cant be empty');
-    }
     const IsPasswordMatching = await bcrypt.compare(
       passwordSent,
       passwordStored,
@@ -42,6 +40,9 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<UserDto> {
     const userStored = await this.userService.findOne(email);
+    if (!userStored) {
+      throw new BadRequestException('Email or password is required');
+    }
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
@@ -61,14 +62,14 @@ export class AuthService {
     };
   }
 
-  async signUp(dataRegister: DataUserDto) {
+  async signUp(dataRegister: InputInfoUserDto) {
     try {
       const confirmationCode = generateHash();
+      await this.userService.createUser(dataRegister, confirmationCode);
       await this.sengridService.sendMailOfConfirmationCode(
         dataRegister.email,
         confirmationCode,
       );
-      await this.userService.createUser(dataRegister, confirmationCode);
       return {
         message: 'Check your email',
       };

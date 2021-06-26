@@ -15,6 +15,7 @@ import { Role } from 'common/enums/role.enum';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { BooksService } from './books.service';
 import { BookStateDto } from './dto/bookState.dto';
+import { ResponseBookDto } from './dto/response-book.dto';
 import { UpdateBookDto } from './dto/updatebook.dto';
 
 @Controller('book')
@@ -53,5 +54,10 @@ export class BooksController {
   @Delete('/delete/:id')
   deleteBook(@Param('id') id: number) {
     return this.bookService.deleteBook(id);
+  }
+
+  @Get('/:id')
+  getBook(@Param('id') id: number): Promise<ResponseBookDto> {
+    return this.bookService.getActiveBook(id);
   }
 }

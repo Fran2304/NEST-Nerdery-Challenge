@@ -30,16 +30,16 @@ import { ShoppingCardModule } from './shopping-card/shopping-card.module';
     AuthorModule,
     CategoryModule,
     BooksModule,
-    ItemModule, 
-    ShoppingCardModule
+    ItemModule,
+    ShoppingCardModule,
   ],
   controllers: [
     AppController,
     AuthorController,
     CategoryController,
     BooksController,
-    ItemController, 
-    ShoppingCardController
+    ItemController,
+    ShoppingCardController,
   ],
   providers: [
     AppService,
