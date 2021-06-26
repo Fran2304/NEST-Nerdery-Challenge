@@ -51,7 +51,7 @@ export class AuthService {
       return userStored;
     }
 
-    throw new BadRequestException();
+    throw new BadRequestException('Password or email is wrong');
   }
 
   async createToken(user): Promise<TokenDto> {
