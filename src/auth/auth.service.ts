@@ -14,6 +14,9 @@ import { TokenDto } from './dto/token.dto';
 import { DataUserDto } from './dto/dataUser.dto';
 import { PayloadUserDto } from './dto/payload.dto';
 import { UserDto } from '../users/dto/user.dto';
+import { ResponseUpdateInfoDto } from 'users/dto/responseUser.dto';
+import { plainToClass } from 'class-transformer';
+import { UpdateInfoDto } from 'users/dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +42,6 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<UserDto> {
     const userStored = await this.userService.findOne(email);
-
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
@@ -86,5 +88,10 @@ export class AuthService {
 
   async signIn(user: PayloadUserDto) {
     return this.createToken(user);
+  }
+
+  async signOut(userId: number): Promise<UpdateInfoDto> {
+    const userLogOut = await this.userService.signOut(userId);
+    return plainToClass(ResponseUpdateInfoDto, userLogOut);
   }
 }
