@@ -36,7 +36,7 @@ export class BooksController {
   }
 
   @Get()
-  getActiveBooks(@Query() paginationQuery): Promise<Book[]> {
+  getActiveBooks(@Query() paginationQuery) {
     return this.bookService.getActiveBooks(paginationQuery);
   }
 

@@ -69,6 +69,9 @@ model Book {
   author Author @relation("AuthorArticles",fields: [authorId], references: [id])
   categories Category[]  @relation(fields: [categoryId],references: [id])
   cards CardItem[]
+
+  image    Attachment?      @relation(fields: [imageId], references: [id])
+  imageId  Int?             @map(name: "image_id")
 }
 
 model CardItem {
@@ -95,8 +98,23 @@ model ShoppingCard {
   CardItem CardItem[]
 }
 
-model BlackListTokens {
-  id Int @default(autoincrement()) @id
-  token String
-  authorId Int
+// model Attachment {
+//   id          Int      @id @default(autoincrement())
+//   uuid        String   @unique @default(uuid())
+//   path        String
+//   key         String
+//   ext         String
+//   contentType String   @map(name: "content_type")
+
+//   books       Book[]
+//   createdAt   DateTime @default(now()) @map(name: "created_at")
+// }
+
+model Attachment {
+  id          Int      @id @default(autoincrement())
+  key         String
+  url         String
+
+  books       Book[]
+  createdAt   DateTime @default(now()) @map(name: "created_at")
 }

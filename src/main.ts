@@ -31,6 +31,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new HttpExceptionFilter());
+
   const options = new DocumentBuilder()
     .setTitle('bookstore')
     .setDescription('bookstore application')
