@@ -15,12 +15,8 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { BooksService } from './books.service';
-
 import { ActiveBookDto } from './dto/activeBooks.dto';
 import { CreateBookDto } from './dto/createBook.dto';
-
-
-
 import { UpdateBookDto } from './dto/updatebook.dto';
 
 @Controller('book')
@@ -43,7 +39,7 @@ export class BooksController {
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/manager')
-  getAllBooks(@Query() paginationQuery): Promise<ActiveBookDto[]> {
+  getAllBooks(@Query() paginationQuery): Promise<Book[]> {
     return this.bookService.getBooks(paginationQuery);
   }
 
@@ -75,4 +71,5 @@ export class BooksController {
   deleteBook(@Param('id') id: number) {
     return this.bookService.deleteBook(id);
   }
+
 }
