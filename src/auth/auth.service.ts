@@ -63,22 +63,15 @@ export class AuthService {
   }
 
   async signUp(dataRegister: InputInfoUserDto) {
-    try {
-      const confirmationCode = generateHash();
-      await this.userService.createUser(dataRegister, confirmationCode);
-      await this.sengridService.sendMailOfConfirmationCode(
-        dataRegister.email,
-        confirmationCode,
-      );
-      return {
-        message: 'Check your email',
-      };
-    } catch (error) {
-      if (error.code === 'P2002') {
-        throw new BadRequestException('User with that email already exists');
-      }
-      throw new InternalServerErrorException('Something went wrong');
-    }
+    const confirmationCode = generateHash();
+    await this.userService.createUser(dataRegister, confirmationCode);
+    await this.sengridService.sendMailOfConfirmationCode(
+      dataRegister.email,
+      confirmationCode,
+    );
+    return {
+      message: 'Check your email',
+    };
   }
 
   async confirmEmail(tokenEmail) {

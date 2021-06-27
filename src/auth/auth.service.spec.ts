@@ -47,7 +47,7 @@ describe('Valid SignUp to User', () => {
         email: 'test@test.com',
         password: 'Password123',
       }),
-    ).rejects.toThrow('User with that email already exists');
+    ).rejects.toThrow('Username or email already exists');
   });
 
   it('should return required fields', async () => {
@@ -59,7 +59,7 @@ describe('Valid SignUp to User', () => {
           password: '',
         }),
       ),
-    ).rejects.toThrow('Something went wrong');
+    ).rejects.toThrow(`Password can't be empty`);
   });
 });
 

@@ -1,51 +1,59 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
-import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../common/services/prisma.service';
 import { plainToClass } from 'class-transformer';
 import { UpdateInfoDto } from './dto/update-user.dto';
 import { ResponseUpdateInfoDto } from './dto/responseUser.dto';
 import { InputInfoUserDto } from './dto/input-user.dto';
+import { generatePassword } from '../common/helpers/generator-hash.helper';
+import { Role } from '../common/enums/role.enum';
+
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
   async getUsers() {
-    try {
-      const users = await this.prismaService.user.findMany();
-      return users;
-    } catch (e) {
-      console.log(e.message);
-    }
-  }
-
-  async generatePassword(plainPassword: string): Promise<string> {
-    if (!plainPassword) {
-      throw new BadRequestException(`Password can't be empty`);
-    }
-    const hashed = await bcrypt.hash(plainPassword, 10);
-    return hashed;
+    return await this.prismaService.user.findMany();
   }
 
   async createUser(
     createUserDto: InputInfoUserDto,
     tokenEmail: string,
   ): Promise<UserDto> {
-    const passwordHashed = await this.generatePassword(createUserDto.password);
+    const { username, email } = createUserDto;
+    const user = await this.uniqueEmailOrUsername(username, email);
+    if (user) throw new BadRequestException('Username or email already exists');
+    const passwordHashed = await generatePassword(createUserDto.password);
     return await this.prismaService.user.create({
       data: {
-        username: createUserDto.username,
-        email: createUserDto.email,
+        username,
+        email,
         password: passwordHashed,
         firstName: '',
         lastName: '',
         role: 'CLIENT',
         hashActivation: tokenEmail,
+      },
+    });
+  }
+
+  async uniqueEmailOrUsername(username: string, email: string) {
+    return await this.prismaService.user.findFirst({
+      where: {
+        OR: [
+          {
+            username,
+          },
+          {
+            email,
+          },
+        ],
       },
     });
   }
