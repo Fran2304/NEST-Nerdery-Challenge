@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from 'common/services/prisma.service';
 import { Author, Book, Category } from '@prisma/client';
 import { CreateBookDto } from './dto/createBook.dto';
@@ -169,6 +170,27 @@ export class BooksService {
     }
     return await this.prismaService.category.create({
       data: { name: nameCategory },
+    });
+  }
+
+  async getActiveBook(bookId: number): Promise<ResponseBookDto> {
+    const book = await this.prismaService.book.findFirst({
+      where: {
+        AND: [{ id: bookId }, { active: true }],
+      },
+    });
+
+    if (!book)
+      throw new NotFoundException(
+        `There's not an book with this Id: ${bookId}`,
+      );
+    return plainToClass(ResponseBookDto, book);
+  }
+
+  async updateStockInBook(bookId: number, count: number, quantity: number) {
+    return await this.prismaService.book.update({
+      where: { id: bookId },
+      data: { quantity: quantity - count },
     });
   }
 }
