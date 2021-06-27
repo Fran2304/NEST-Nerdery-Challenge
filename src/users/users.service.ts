@@ -6,6 +6,7 @@ import { PrismaService } from '../common/services/prisma.service';
 import { plainToClass } from 'class-transformer';
 import { UpdateInfoDto } from './dto/update-user.dto';
 import { ResponseUpdateInfoDto } from './dto/responseUser.dto';
+import { User } from '@prisma/client';
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
@@ -51,7 +52,7 @@ export class UsersService {
     });
   }
 
-  async findUserWithToken(emailToken: string): Promise<CreateUserDto> {
+  async findUserWithToken(emailToken: string): Promise<User> {
     return await this.prismaService.user.findFirst({
       where: { hashActivation: emailToken },
     });

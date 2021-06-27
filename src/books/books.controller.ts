@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { Book } from '@prisma/client';
 import { JwtAuthGuard } from 'auth/jwt-auth.guard';
@@ -14,7 +15,8 @@ import { Roles } from 'common/decorators/roles.decorator';
 import { Role } from 'common/enums/role.enum';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { BooksService } from './books.service';
-import { BookStateDto } from './dto/bookState.dto';
+import { ActiveBookDto } from './dto/activeBooks.dto';
+import { CreateBookDto } from './dto/createBook.dto';
 import { UpdateBookDto } from './dto/updatebook.dto';
 
 @Controller('book')
@@ -24,20 +26,35 @@ export class BooksController {
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
-  createBook(@Body() createBook): Promise<Book> {
+  createBook(@Body() createBook: CreateBookDto): Promise<Book> {
     console.log(createBook);
     return this.bookService.createBook(createBook);
   }
 
   @Get()
-  getBooks(): Promise<Book[]> {
-    return this.bookService.getBooks();
+  getActiveBooks(@Query() paginationQuery): Promise<Book[]> {
+    return this.bookService.getActiveBooks(paginationQuery);
+  }
+
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('/manager')
+  getAllBooks(@Query() paginationQuery): Promise<ActiveBookDto[]> {
+    return this.bookService.getBooks(paginationQuery);
+  }
+
+  @Get('/:idBook')
+  getOneBook(@Param('idBook') id: number) {
+    return this.bookService.getOneBook(id);
   }
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('/update/:id')
-  updateBook(@Param('id') id: number, @Body() updateBookDto: UpdateBookDto) {
+  updateBook(
+    @Param('id') id: number,
+    @Body() updateBookDto: UpdateBookDto,
+  ): Promise<Book> {
     return this.bookService.updateBook(id, updateBookDto);
   }
 

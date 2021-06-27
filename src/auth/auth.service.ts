@@ -17,6 +17,7 @@ import { UserDto } from '../users/dto/user.dto';
 import { ResponseUpdateInfoDto } from 'users/dto/responseUser.dto';
 import { plainToClass } from 'class-transformer';
 import { UpdateInfoDto } from 'users/dto/update-user.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -55,7 +56,13 @@ export class AuthService {
   }
 
   async createToken(user): Promise<TokenDto> {
-    const payload = { id: user.id, username: user.username, role: user.role };
+    const payload = {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      active: user.active,
+    };
+
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -83,10 +90,16 @@ export class AuthService {
   async confirmEmail(tokenEmail) {
     const user = await this.userService.findUserWithToken(tokenEmail);
     if (!user) throw new NotFoundException('Not found User');
+    await this.userService.updateUser(user.id, {
+      active: true,
+    });
     return this.createToken(user);
   }
 
-  async signIn(user: PayloadUserDto) {
+  async signIn(user: User) {
+    await this.userService.updateUser(user.id, {
+      active: true,
+    });
     return this.createToken(user);
   }
 
