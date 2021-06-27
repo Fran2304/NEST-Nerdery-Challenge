@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { Category } from '@prisma/client';
-import { JwtAuthGuard } from 'auth/jwt-auth.guard';
-import { CreateCategoryDto } from 'books/dto/category.dto';
-import { Roles } from 'common/decorators/roles.decorator';
-import { Role } from 'common/enums/role.enum';
-import { RolesGuard } from 'common/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateCategoryDto } from '../books/dto/category.dto';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { CategoryService } from './category.service';
 
 @Controller('category')

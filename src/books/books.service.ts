@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from 'common/services/prisma.service';
 import { Author, Book, Category } from '@prisma/client';
 import { CreateBookDto } from './dto/createBook.dto';
 import { BookStateDto } from './dto/bookState.dto';
 import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
 import { paginatedHelper } from 'common/helpers/paginated.helper';
-
 import { plainToClass } from 'class-transformer';
 import { ActiveBookDto } from './dto/activeBooks.dto';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 import { DetailBookDto } from './dto/detailBook.dto';
+import { ResponseBookDto } from './dto/response-book.dto';
 
 @Injectable()
 export class BooksService {
@@ -83,6 +84,20 @@ export class BooksService {
       );
 
     return plainToClass(DetailBookDto, oneBook);
+  }
+
+  async getOneBookActive(bookId: number): Promise<ResponseBookDto> {
+    const book = await this.prismaService.book.findFirst({
+      where: {
+        AND: [{ id: bookId }, { active: true }],
+      },
+    });
+
+    if (!book)
+      throw new NotFoundException(
+        `There's not an book with this Id: ${bookId}`,
+      );
+    return plainToClass(ResponseBookDto, book);
   }
 
   async updateBook(bookId: number, updateBookDto) {
@@ -170,6 +185,13 @@ export class BooksService {
     }
     return await this.prismaService.category.create({
       data: { name: nameCategory },
+    });
+  }
+
+  async updateStockInBook(bookId: number, count: number, quantity: number) {
+    return await this.prismaService.book.update({
+      where: { id: bookId },
+      data: { quantity: quantity - count },
     });
   }
 }

@@ -10,11 +10,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { Book } from '@prisma/client';
-import { JwtAuthGuard } from 'auth/jwt-auth.guard';
-import { Roles } from 'common/decorators/roles.decorator';
-import { Role } from 'common/enums/role.enum';
-import { RolesGuard } from 'common/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { BooksService } from './books.service';
+
 import { ActiveBookDto } from './dto/activeBooks.dto';
 import { CreateBookDto } from './dto/createBook.dto';
 import { DetailBookDto } from './dto/detailBook.dto';
@@ -33,7 +34,7 @@ export class BooksController {
   }
 
   @Get()
-  getActiveBooks(@Query() paginationQuery): Promise<Book[]> {
+  getActiveBooks(@Query() paginationQuery) {
     return this.bookService.getActiveBooks(paginationQuery);
   }
 
@@ -46,7 +47,7 @@ export class BooksController {
 
   @Get('/:idBook')
   getOneBook(@Param('idBook') id: number): Promise<DetailBookDto> {
-    return this.bookService.getOneBook(id);
+    return this.bookService.getOneBookActive(id);
   }
 
   @Roles(Role.MANAGER)

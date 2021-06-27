@@ -14,10 +14,12 @@ import { TokenDto } from './dto/token.dto';
 import { DataUserDto } from './dto/dataUser.dto';
 import { PayloadUserDto } from './dto/payload.dto';
 import { UserDto } from '../users/dto/user.dto';
-import { ResponseUpdateInfoDto } from 'users/dto/responseUser.dto';
+import { ResponseUpdateInfoDto } from '../users/dto/responseUser.dto';
 import { plainToClass } from 'class-transformer';
-import { UpdateInfoDto } from 'users/dto/update-user.dto';
 import { User } from '@prisma/client';
+import { UpdateInfoDto } from '../users/dto/update-user.dto';
+import { InputInfoUserDto } from '../users/dto/input-user.dto';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -31,9 +33,6 @@ export class AuthService {
     passwordSent: string,
     passwordStored: string,
   ): Promise<boolean> {
-    if (!passwordSent) {
-      throw new UnprocessableEntityException('Password cant be empty');
-    }
     const IsPasswordMatching = await bcrypt.compare(
       passwordSent,
       passwordStored,
@@ -43,6 +42,9 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<UserDto> {
     const userStored = await this.userService.findOne(email);
+    if (!userStored) {
+      throw new BadRequestException('Not found user');
+    }
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
@@ -60,7 +62,6 @@ export class AuthService {
       id: user.id,
       username: user.username,
       role: user.role,
-      active: user.active,
     };
 
     return {
@@ -69,22 +70,15 @@ export class AuthService {
   }
 
   async signUp(dataRegister: DataUserDto) {
-    try {
-      const confirmationCode = generateHash();
-      await this.sengridService.sendMailOfConfirmationCode(
-        dataRegister.email,
-        confirmationCode,
-      );
-      await this.userService.createUser(dataRegister, confirmationCode);
-      return {
-        message: 'Check your email',
-      };
-    } catch (error) {
-      if (error.code === 'P2002') {
-        throw new BadRequestException('User with that email already exists');
-      }
-      throw new InternalServerErrorException('Something went wrong');
-    }
+    const confirmationCode = generateHash();
+    await this.userService.createUser(dataRegister, confirmationCode);
+    await this.sengridService.sendMailOfConfirmationCode(
+      dataRegister.email,
+      confirmationCode,
+    );
+    return {
+      message: 'Check your email',
+    };
   }
 
   async confirmEmail(tokenEmail) {
