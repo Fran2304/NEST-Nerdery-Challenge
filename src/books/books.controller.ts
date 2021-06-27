@@ -75,9 +75,4 @@ export class BooksController {
   deleteBook(@Param('id') id: number) {
     return this.bookService.deleteBook(id);
   }
-
-  @Get('/:id')
-  getBook(@Param('id') id: number): Promise<ResponseBookDto> {
-    return this.bookService.getActiveBook(id);
-  }
 }

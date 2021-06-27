@@ -19,7 +19,7 @@ import { plainToClass } from 'class-transformer';
 import { User } from '@prisma/client';
 import { UpdateInfoDto } from '../users/dto/update-user.dto';
 import { InputInfoUserDto } from '../users/dto/input-user.dto';
-
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -43,7 +43,7 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<UserDto> {
     const userStored = await this.userService.findOne(email);
     if (!userStored) {
-      throw new BadRequestException('Email or password is required');
+      throw new BadRequestException('Not found user');
     }
     const passwordChecked = await this.checkPassword(
       password,
@@ -62,7 +62,6 @@ export class AuthService {
       id: user.id,
       username: user.username,
       role: user.role,
-      active: user.active,
     };
 
     return {
@@ -70,8 +69,7 @@ export class AuthService {
     };
   }
 
-  async signUp(dataRegister: 
-               ) {
+  async signUp(dataRegister: DataUserDto) {
     const confirmationCode = generateHash();
     await this.userService.createUser(dataRegister, confirmationCode);
     await this.sengridService.sendMailOfConfirmationCode(

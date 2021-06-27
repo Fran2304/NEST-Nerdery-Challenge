@@ -17,7 +17,6 @@ import { InputInfoUserDto } from './dto/input-user.dto';
 import { generatePassword } from '../common/helpers/generator-hash.helper';
 import { Role } from '../common/enums/role.enum';
 
-
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
@@ -103,5 +102,12 @@ export class UsersService {
       data: { role: newRole.role },
     });
     return plainToClass(UserDto, user);
+  }
+
+  async validateActiveUser(idUser: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: idUser },
+    });
+    return user.active;
   }
 }

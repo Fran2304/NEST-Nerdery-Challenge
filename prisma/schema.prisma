@@ -94,3 +94,9 @@ model ShoppingCard {
   user User @relation(fields: [userId], references: [id])
   CardItem CardItem[]
 }
+
+model BlackListTokens {
+  id Int @default(autoincrement()) @id
+  token String
+  authorId Int
+}
