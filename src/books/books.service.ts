@@ -9,6 +9,7 @@ import { paginatedHelper } from 'common/helpers/paginated.helper';
 import { plainToClass } from 'class-transformer';
 import { ActiveBookDto } from './dto/activeBooks.dto';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { DetailBookDto } from './dto/detailBook.dto';
 
 @Injectable()
 export class BooksService {
@@ -69,7 +70,7 @@ export class BooksService {
     return plainToClass(ActiveBookDto, activeBooks);
   }
 
-  async getOneBook(bookId): Promise<Book> {
+  async getOneBook(bookId): Promise<DetailBookDto> {
     const oneBook = await this.prismaService.book.findUnique({
       where: {
         id: bookId,
@@ -81,7 +82,7 @@ export class BooksService {
         `There's not any book with this Id: ${bookId}`,
       );
 
-    return oneBook;
+    return plainToClass(DetailBookDto, oneBook);
   }
 
   async updateBook(bookId: number, updateBookDto) {

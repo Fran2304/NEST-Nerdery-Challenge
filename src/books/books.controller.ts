@@ -17,6 +17,7 @@ import { RolesGuard } from 'common/guards/roles.guard';
 import { BooksService } from './books.service';
 import { ActiveBookDto } from './dto/activeBooks.dto';
 import { CreateBookDto } from './dto/createBook.dto';
+import { DetailBookDto } from './dto/detailBook.dto';
 import { UpdateBookDto } from './dto/updatebook.dto';
 
 @Controller('book')
@@ -44,7 +45,7 @@ export class BooksController {
   }
 
   @Get('/:idBook')
-  getOneBook(@Param('idBook') id: number) {
+  getOneBook(@Param('idBook') id: number): Promise<DetailBookDto> {
     return this.bookService.getOneBook(id);
   }
 

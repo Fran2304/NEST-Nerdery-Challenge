@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Exclude } from 'class-transformer';
 
-export class ActiveBookDto {
+export class DetailBookDto {
   @Exclude()
   id: number;
   title: string;
@@ -11,8 +11,6 @@ export class ActiveBookDto {
   price: number;
   urlImage: string;
   active: boolean;
-  @Exclude()
   categoryId: number;
-  @Exclude()
   authorId: number;
 }
