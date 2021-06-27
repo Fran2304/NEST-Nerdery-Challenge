@@ -10,9 +10,13 @@ import { PrismaService } from '../common/services/prisma.service';
 import { plainToClass } from 'class-transformer';
 import { UpdateInfoDto } from './dto/update-user.dto';
 import { ResponseUpdateInfoDto } from './dto/responseUser.dto';
+
+import { User } from '@prisma/client';
+
 import { InputInfoUserDto } from './dto/input-user.dto';
 import { generatePassword } from '../common/helpers/generator-hash.helper';
 import { Role } from '../common/enums/role.enum';
+
 
 @Injectable()
 export class UsersService {
@@ -64,7 +68,7 @@ export class UsersService {
     });
   }
 
-  async findUserWithToken(emailToken: string): Promise<CreateUserDto> {
+  async findUserWithToken(emailToken: string): Promise<User> {
     return await this.prismaService.user.findFirst({
       where: { hashActivation: emailToken },
     });
