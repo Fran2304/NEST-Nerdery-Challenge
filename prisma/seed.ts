@@ -27,8 +27,10 @@ const prisma = new PrismaClient();
 async function main() {
   for (const user of users) {
     const { username, email, password } = user;
-    await prisma.user.create({
-      data: {
+    await prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: {
         username,
         email,
         password,
