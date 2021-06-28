@@ -20,22 +20,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-
-export const ApiFile =
-  (fileName = 'file'): MethodDecorator =>
-  (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-    ApiBody({
-      schema: {
-        type: 'object',
-        properties: {
-          [fileName]: {
-            type: 'string',
-            format: 'binary',
-          },
-        },
-      },
-    })(target, propertyKey, descriptor);
-  };
+import { ApiFile } from '../common/helpers/upload-swagger-decorator';
 
 @ApiTags('Attachments')
 @Controller('attachments')
@@ -48,17 +33,7 @@ export class AttachmentsController {
   @ApiBearerAuth('access_token')
   @Post()
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'file',
-          format: 'binary',
-        },
-      },
-    },
-  })
+  @ApiFile('file')
   @UseInterceptors(FileInterceptor('file'))
   async createAttachment(
     @UploadedFile() file: Express.Multer.File,
