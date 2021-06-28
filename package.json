@@ -1,6 +1,9 @@
 {
   "name": "nest-nerdery-challenge",
   "version": "0.0.1",
+  "engines": {
+    "node": "14.x"
+  },
   "description": "",
   "author": "",
   "private": true,
