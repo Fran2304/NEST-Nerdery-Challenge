@@ -90,7 +90,7 @@ export class AuthService {
     return this.createToken(user);
   }
 
-  async signIn(user: User) {
+  async signIn(user: User, body) {
     await this.userService.updateUser(user.id, {
       active: true,
     });

@@ -21,11 +21,10 @@ export class CreateBookDto {
   readonly yearPublished?: number;
 
   @IsNumber()
-  readonly price: number;
-
-  @IsNotEmpty()
+  readonly price: number
+  
   @IsString()
-  readonly urlImage: string;
+  readonly urlImage?: string;
 
   @IsPositive()
   @IsNumber()

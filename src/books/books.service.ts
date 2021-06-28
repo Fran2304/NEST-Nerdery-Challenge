@@ -198,7 +198,11 @@ export class BooksService {
     });
   }
 
-  async addUrlImage(bookId: number, imageBuffer: Buffer, filename: string) {
+  async addUrlImage(
+    bookId: number,
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<Book> {
     const urlImage = await this.attachmentsService.createAttachment(
       imageBuffer,
       filename,
