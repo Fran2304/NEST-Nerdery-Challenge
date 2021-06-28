@@ -4,7 +4,7 @@ import { PrismaService } from '../common/services/prisma.service';
 import { Author, Book, Category } from '@prisma/client';
 import { CreateBookDto } from './dto/createBook.dto';
 import { BookStateDto } from './dto/bookState.dto';
-import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { paginatedHelper } from '../common/helpers/paginated.helper';
 import { plainToClass } from 'class-transformer';
 import { ActiveBookDto } from './dto/activeBooks.dto';

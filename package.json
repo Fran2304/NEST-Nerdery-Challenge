@@ -1,14 +1,12 @@
 {
   "name": "nest-nerdery-challenge",
   "version": "0.0.1",
-  "engines": {
-    "node": "14.x"
-  },
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "postinstall": "npx prisma generate && npm run build",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -24,8 +22,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migrate:dbtest": "npx dotenv -e .env.test -- npx prisma migrate dev --name experimental",
-    "postinstall": "npx prisma generate && npm run build"
+    "prisma:migrate:run": "npx prisma migrate deploy --preview-feature",
+    "migrate:dbtest": "npx dotenv -e .env.test -- npx prisma migrate dev --name experimental"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.15",
@@ -53,6 +51,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@nestjs/cli": "^7.6.0",
     "@nestjs/schematics": "^7.3.0",
     "@nestjs/testing": "^7.6.15",
     "@types/bcrypt": "^5.0.0",
