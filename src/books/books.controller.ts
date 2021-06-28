@@ -72,6 +72,7 @@ export class BooksController {
 
   // Likes to books by costumer
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Patch('/:id')
   updateLikes(
     @Param('id') bookId: number,
@@ -129,4 +130,9 @@ export class BooksController {
   ): Promise<Book> {
     return this.bookService.addUrlImage(id, file.buffer, file.originalname);
   }
+
+  // @Get('/test/:id')
+  // geOneActive(@Param('id') id: string) {
+  //   return this.bookService.getOneBookActive(Number(id))
+  // }
 }
