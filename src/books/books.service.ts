@@ -9,7 +9,9 @@ import { paginatedHelper } from '../common/helpers/paginated.helper';
 import { plainToClass } from 'class-transformer';
 import { ActiveBookDto } from './dto/activeBooks.dto';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { DetailBookDto } from './dto/detailBook.dto';
 import { ResponseBookDto } from './dto/response-book.dto';
+import { LikeBookDto } from './dto/likeBookDto.dto';
 import { AttachmentsService } from '../attachments/attachments.service';
 
 @Injectable()
@@ -74,7 +76,7 @@ export class BooksService {
     return plainToClass(ActiveBookDto, activeBooks);
   }
 
-  async getOneBook(bookId): Promise<Book> {
+  async getOneBook(bookId): Promise<DetailBookDto> {
     const oneBook = await this.prismaService.book.findUnique({
       where: {
         id: bookId,
@@ -86,7 +88,7 @@ export class BooksService {
         `There's not any book with this Id: ${bookId}`,
       );
 
-    return oneBook;
+    return plainToClass(DetailBookDto, oneBook);
   }
 
   async getOneBookActive(bookId: number): Promise<ResponseBookDto> {
@@ -160,6 +162,89 @@ export class BooksService {
         `There's not any book with this Id: ${bookId}`,
       );
     return bookUpdated;
+  }
+
+  async processLikes(bookId: number, uid: number, dataLike: LikeBookDto) {
+    const book = await this.prismaService.book.findUnique({
+      where: {
+        id: bookId,
+      },
+    });
+
+    if (!book)
+      throw new NotFoundException(
+        `There's not any book with this Id: ${bookId}`,
+      );
+    let totalLikes;
+    if (dataLike.like) {
+      totalLikes = await this.likeBook(bookId, uid, book.likesQuantity);
+    } else {
+      totalLikes = await this.dislikeBook(bookId, uid, book.likesQuantity);
+    }
+    return totalLikes;
+  }
+
+  async likeBook(bookId, uid, quantityLikes) {
+    // console.log('like', bookId, uid, quantityLikes);
+    const bookLike = await this.prismaService.booksLikes.findFirst({
+      where: {
+        bookId: bookId,
+        userId: uid,
+      },
+    });
+    if (bookLike !== null) {
+      throw new NotFoundException('Cant like a post that has a like');
+    }
+
+    const updateLikes = await this.prismaService.book.update({
+      where: {
+        id: bookId,
+      },
+      data: {
+        likesQuantity: quantityLikes + 1,
+      },
+    });
+
+    await this.prismaService.booksLikes.create({
+      data: {
+        bookId,
+        userId: uid,
+        like: true,
+      },
+    });
+
+    return updateLikes.likesQuantity;
+  }
+
+  async dislikeBook(bookId, uid, quantityLikes) {
+    console.log('dislike', bookId, uid, quantityLikes);
+    const bookLike = await this.prismaService.booksLikes.findFirst({
+      where: {
+        bookId: bookId,
+        userId: uid,
+      },
+    });
+
+    if (bookLike == null) {
+      throw new NotFoundException('Cant dislike a post that havent been liked');
+    }
+
+    const updateLikes = await this.prismaService.book.update({
+      where: {
+        id: bookId,
+      },
+      data: {
+        likesQuantity: quantityLikes - 1,
+      },
+    });
+
+    await this.prismaService.booksLikes.delete({
+      where: {
+        id: bookLike?.id,
+      },
+    });
+
+    return updateLikes.likesQuantity;
   }
 
   private async preloadAuthorByName(name: string): Promise<Author> {

@@ -8,6 +8,7 @@ import {
   UseGuards,
   Delete,
   Query,
+  Request,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +20,8 @@ import { Role } from '../common/enums/role.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/createBook.dto';
+import { DetailBookDto } from './dto/detailBook.dto';
+import { LikeBookDto } from './dto/likeBookDto.dto';
 import { UpdateBookDto } from './dto/updatebook.dto';
 import { Express } from 'express';
 import {
@@ -34,6 +37,7 @@ import { ApiFile } from '../common/helpers/upload-swagger-decorator';
 export class BooksController {
   constructor(private readonly bookService: BooksService) {}
 
+  // Create a book manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Only MANAGER access' })
@@ -44,11 +48,13 @@ export class BooksController {
     return this.bookService.createBook(createBook);
   }
 
+  // See actives products costumer
   @Get()
   getActiveBooks(@Query() paginationQuery) {
     return this.bookService.getActiveBooks(paginationQuery);
   }
 
+  // See all products manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Only MANAGER access' })
@@ -58,11 +64,25 @@ export class BooksController {
     return this.bookService.getBooks(paginationQuery);
   }
 
+  // See active books details costumer
   @Get('/:idBook')
-  getOneBook(@Param('idBook') id: number) {
+  getOneBook(@Param('idBook') id: number): Promise<DetailBookDto> {
     return this.bookService.getOneBook(id);
   }
 
+  // Likes to books by costumer
+  @UseGuards(JwtAuthGuard)
+  @Patch('/:id')
+  updateLikes(
+    @Param('id') bookId: number,
+    @Request() req,
+    @Body() dataLike: LikeBookDto,
+  ): Promise<any> {
+    // console.log(bookId, req.user.id, dataLike);
+    return this.bookService.processLikes(bookId, req.user.id, dataLike);
+  }
+
+  //Updatae books manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Only MANAGER access' })
@@ -75,6 +95,7 @@ export class BooksController {
     return this.bookService.updateBook(id, updateBookDto);
   }
 
+  // Disable books manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Only MANAGER access' })
@@ -84,6 +105,7 @@ export class BooksController {
     return this.bookService.disableBook(id, bookStateDto);
   }
 
+  // Delete books manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('/delete/:id')
