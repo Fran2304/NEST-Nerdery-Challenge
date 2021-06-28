@@ -24,7 +24,13 @@ import { DetailBookDto } from './dto/detailBook.dto';
 import { LikeBookDto } from './dto/likeBookDto.dto';
 import { UpdateBookDto } from './dto/updatebook.dto';
 import { Express } from 'express';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { ApiFile } from '../common/helpers/upload-swagger-decorator';
 
 @ApiTags('Books')
 @Controller('book')
@@ -115,6 +121,8 @@ export class BooksController {
   @ApiOperation({ summary: 'Only MANAGER access' })
   @ApiBearerAuth('access_token')
   @Post(':id/attachment')
+  @ApiConsumes('multipart/form-data')
+  @ApiFile('file')
   addUrlImage(
     @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,
