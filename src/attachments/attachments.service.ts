@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { config as configAWS, S3 } from 'aws-sdk';
 import { PrismaService } from '../common/services/prisma.service';
 import { v4 as uuid } from 'uuid';
+import { Attachment } from '@prisma/client';
 
 @Injectable()
 export class AttachmentsService {
@@ -17,7 +18,10 @@ export class AttachmentsService {
     this.s3 = new S3();
   }
 
-  async createAttachment(dataBuffer: Buffer, filename: string) {
+  async createAttachment(
+    dataBuffer: Buffer,
+    filename: string,
+  ): Promise<Attachment> {
     const uploadResult = await this.s3
       .upload({
         Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
@@ -26,13 +30,11 @@ export class AttachmentsService {
       })
       .promise();
 
-    const newFile = await this.prismaService.attachment.create({
+    return await this.prismaService.attachment.create({
       data: {
         key: uploadResult.Key,
-        url: uploadResult.Location
-      }
-    })
-
-    return newFile;
+        url: uploadResult.Location,
+      },
+    });
   }
 }

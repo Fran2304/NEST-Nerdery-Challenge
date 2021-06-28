@@ -9,7 +9,10 @@ import {
   Delete,
   Query,
   Request,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Book } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -21,7 +24,10 @@ import { CreateBookDto } from './dto/createBook.dto';
 import { DetailBookDto } from './dto/detailBook.dto';
 import { LikeBookDto } from './dto/likeBookDto.dto';
 import { UpdateBookDto } from './dto/updatebook.dto';
+import { Express } from 'express';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Books')
 @Controller('book')
 export class BooksController {
   constructor(private readonly bookService: BooksService) {}
@@ -29,6 +35,8 @@ export class BooksController {
   // Create a book manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Only MANAGER access' })
+  @ApiBearerAuth('access_token')
   @Post()
   createBook(@Body() createBook: CreateBookDto): Promise<Book> {
     console.log(createBook);
@@ -44,8 +52,10 @@ export class BooksController {
   // See all products manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Only MANAGER access' })
+  @ApiBearerAuth('access_token')
   @Get('/manager')
-  getAllBooks(@Query() paginationQuery): Promise<ActiveBookDto[]> {
+  getAllBooks(@Query() paginationQuery): Promise<Book[]> {
     return this.bookService.getBooks(paginationQuery);
   }
 
@@ -70,6 +80,8 @@ export class BooksController {
   //Updatae books manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Only MANAGER access' })
+  @ApiBearerAuth('access_token')
   @Patch('/update/:id')
   updateBook(
     @Param('id') id: number,
@@ -81,6 +93,8 @@ export class BooksController {
   // Disable books manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Only MANAGER access' })
+  @ApiBearerAuth('access_token')
   @Patch('/disable/:id')
   disable(@Param('id') id: number, @Body() bookStateDto) {
     return this.bookService.disableBook(id, bookStateDto);
@@ -90,7 +104,22 @@ export class BooksController {
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('/delete/:id')
+  @ApiOperation({ summary: 'Only MANAGER access' })
+  @ApiBearerAuth('access_token')
   deleteBook(@Param('id') id: number) {
     return this.bookService.deleteBook(id);
+  }
+
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Only MANAGER access' })
+  @ApiBearerAuth('access_token')
+  @Post(':id/attachment')
+  addUrlImage(
+    @Param('id') id: number,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<Book> {
+    return this.bookService.addUrlImage(id, file.buffer, file.originalname);
   }
 }
