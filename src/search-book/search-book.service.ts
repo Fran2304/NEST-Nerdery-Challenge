@@ -13,12 +13,14 @@ export class SearchBookService {
 
   async searchingByCategory(nameCategory): Promise<ActiveBookDto[]> {
     const { search } = nameCategory;
-    const category = await this.categoryService.getCategoryByName(search);
+    const category = await this.categoryService.getCategoryByName(
+      search.toLowerCase(),
+    );
     const books = await this.prismaService.book.findMany({
       where: {
         categoryId: category.id,
       },
     });
-    return plainToClass(ActiveBookDto, books)
+    return plainToClass(ActiveBookDto, books);
   }
 }

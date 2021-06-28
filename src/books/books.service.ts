@@ -1,19 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { PrismaService } from 'common/services/prisma.service';
+import { PrismaService } from '../common/services/prisma.service';
 import { Author, Book, Category } from '@prisma/client';
 import { CreateBookDto } from './dto/createBook.dto';
 import { BookStateDto } from './dto/bookState.dto';
 import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
-import { paginatedHelper } from 'common/helpers/paginated.helper';
+import { paginatedHelper } from '../common/helpers/paginated.helper';
 import { plainToClass } from 'class-transformer';
 import { ActiveBookDto } from './dto/activeBooks.dto';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 import { ResponseBookDto } from './dto/response-book.dto';
+import { AttachmentsService } from '../attachments/attachments.service';
 
 @Injectable()
 export class BooksService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly attachmentsService: AttachmentsService,
+  ) {}
 
   async createBook(createBookDto: CreateBookDto): Promise<Book> {
     const existingBook = await this.prismaService.book.findFirst({
@@ -191,6 +195,20 @@ export class BooksService {
     return await this.prismaService.book.update({
       where: { id: bookId },
       data: { quantity: quantity - count },
+    });
+  }
+
+  async addUrlImage(bookId: number, imageBuffer: Buffer, filename: string) {
+    const urlImage = await this.attachmentsService.createAttachment(
+      imageBuffer,
+      filename,
+    );
+    return await this.prismaService.book.update({
+      where: { id: bookId },
+      data: {
+        urlImage: urlImage.url,
+        imageId: urlImage.id,
+      },
     });
   }
 }

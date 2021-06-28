@@ -8,7 +8,10 @@ import {
   UseGuards,
   Delete,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { ExpressAdapter, FileInterceptor } from '@nestjs/platform-express';
 import { Book } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -18,6 +21,7 @@ import { BooksService } from './books.service';
 import { ActiveBookDto } from './dto/activeBooks.dto';
 import { CreateBookDto } from './dto/createBook.dto';
 import { UpdateBookDto } from './dto/updatebook.dto';
+import { Express } from 'express';
 
 @Controller('book')
 export class BooksController {
@@ -72,4 +76,14 @@ export class BooksController {
     return this.bookService.deleteBook(id);
   }
 
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':id/attachment')
+  addUrlImage(
+    @Param('id') id: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.bookService.addUrlImage(id, file.buffer, file.originalname);
+  }
 }
