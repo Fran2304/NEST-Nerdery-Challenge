@@ -19,7 +19,6 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { BooksService } from './books.service';
-import { ActiveBookDto } from './dto/activeBooks.dto';
 import { CreateBookDto } from './dto/createBook.dto';
 import { DetailBookDto } from './dto/detailBook.dto';
 import { LikeBookDto } from './dto/likeBookDto.dto';
