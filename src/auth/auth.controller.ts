@@ -10,7 +10,6 @@ import {
   Response,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UpdateInfoDto } from 'users/dto/update-user.dto';
 import { InputInfoUserDto } from '../users/dto/input-user.dto';
 import { AuthService } from './auth.service';
 import { MessageDto } from './dto/message.dto';
