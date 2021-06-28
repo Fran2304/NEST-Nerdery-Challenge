@@ -39,6 +39,7 @@ model User {
   active Boolean  @default(false)
 
   shoppingCards ShoppingCard[] 
+  booksLikes BooksLikes[]
 }
 
 model Author {
@@ -69,9 +70,10 @@ model Book {
   author Author @relation("AuthorArticles",fields: [authorId], references: [id])
   categories Category[]  @relation(fields: [categoryId],references: [id])
   cards CardItem[]
-
   image    Attachment?      @relation(fields: [imageId], references: [id])
   imageId  Int?             @map(name: "image_id")
+  likesQuantity Int @default(0) @map(name: "likes_quantity")
+  booksLikes BooksLikes[]
 }
 
 model CardItem {
@@ -98,6 +100,14 @@ model ShoppingCard {
   CardItem CardItem[]
 }
 
+model BooksLikes{
+  id Int @id @default(autoincrement())
+  userId Int @map(name:"user_id")
+  bookId Int @map(name: "book_id")
+  like Boolean @default(false)
+  user User @relation(fields: [userId], references:[id])
+  book Book  @relation(fields: [bookId], references:[id])
+}
 // model Attachment {
 //   id          Int      @id @default(autoincrement())
 //   uuid        String   @unique @default(uuid())
