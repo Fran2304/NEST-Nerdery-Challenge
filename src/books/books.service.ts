@@ -13,6 +13,7 @@ import { DetailBookDto } from './dto/detailBook.dto';
 import { ResponseBookDto } from './dto/response-book.dto';
 import { LikeBookDto } from './dto/likeBookDto.dto';
 import { AttachmentsService } from '../attachments/attachments.service';
+import { String } from 'aws-sdk/clients/cloudtrail';
 
 @Injectable()
 export class BooksService {
@@ -284,7 +285,7 @@ export class BooksService {
   }
 
   async addUrlImage(
-    bookId: number,
+    bookId: string,
     imageBuffer: Buffer,
     filename: string,
   ): Promise<Book> {
@@ -293,7 +294,7 @@ export class BooksService {
       filename,
     );
     return await this.prismaService.book.update({
-      where: { id: bookId },
+      where: { id: Number(bookId) },
       data: {
         urlImage: urlImage.url,
         imageId: urlImage.id,
