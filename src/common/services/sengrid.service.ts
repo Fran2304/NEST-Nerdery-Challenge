@@ -16,7 +16,7 @@ export class SengridService {
       to: email,
       from: 'diana@ravn.co',
       subject: 'Confirmation email to bookstore',
-      text: `Link to confirm email: http://localhost:3000/confirm/${tokenEmail}`,
+      text: `Link to confirm email: https://challenge-nest.herokuapp.com/confirm/${tokenEmail}`,
     };
     this.sendgridClient.send(msg);
   }
