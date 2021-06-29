@@ -18,6 +18,7 @@
     "test": "npx dotenv -e .env.test -- jest",
     "test:auth": "npx dotenv -e .env.test -- jest auth/auth.service.spec.ts",
     "test:user": "npx dotenv -e .env.test -- jest users/users.service.spec.ts",
+    "test:author": "npx dotenv -e .env.test -- jest author/author.service.spec.ts",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

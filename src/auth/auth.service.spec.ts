@@ -9,7 +9,6 @@ import { JwtStrategy } from './jwt.strategy';
 import { LocalStrategy } from './local.strategy';
 import { InputInfoUserDto } from '../users/dto/input-user.dto';
 import { plainToClass } from 'class-transformer';
-import { prisma } from '@prisma/client';
 import { UserDto } from '../users/dto/user.dto';
 
 let service: AuthService;

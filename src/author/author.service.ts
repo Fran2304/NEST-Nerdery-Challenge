@@ -29,17 +29,12 @@ export class AuthorService {
   }
 
   async createAuthor(createAuthor: CreateAuthorDto): Promise<Author> {
-    const author = await this.prismaService.author.findFirst({
+    return await this.prismaService.author.upsert({
       where: { fullName: createAuthor.fullName },
-    });
-    if (author) {
-      throw new NotFoundException('The author has already exist');
-    }
-
-    return await this.prismaService.author.create({
-      data: {
+      create: {
         fullName: createAuthor.fullName,
       },
+      update: {},
     });
   }
 }
