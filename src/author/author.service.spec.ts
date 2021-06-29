@@ -16,11 +16,14 @@ beforeEach(async () => {
   prismaService = module.get<PrismaService>(PrismaService);
 });
 
+let idAuthor: number;
+
 describe('Create author', () => {
   it('should return a new author', async () => {
     const res = await service.createAuthor({
       fullName: 'Isabel Allende',
     });
+    idAuthor = res.id;
     expect(res).toHaveProperty('id');
     expect(res.fullName).toEqual('Isabel Allende');
   });
@@ -33,20 +36,21 @@ describe('Create author', () => {
   });
 });
 
-describe.skip('Get author', () => {
+describe('Get author', () => {
   it('should return an author', async () => {
-    const res = await service.createAuthor({
-      fullName: 'Isabel Allende',
-    });
+    const res = await service.getAuthor(idAuthor.toString());
     expect(res).toHaveProperty('id');
     expect(res.fullName).toEqual('Isabel Allende');
   });
-  it(`return author, upsert method, if it's repeat the full name`, async () => {
-    const res = await service.createAuthor({
-      fullName: 'Isabel Allende',
-    });
-    expect(res).toHaveProperty('id');
-    expect(res.fullName).toEqual('Isabel Allende');
+  it(`should return a not found author`, async () => {
+    await expect(service.getAuthor('123')).rejects.toThrow(
+      `There's not an author with this Id: 123`,
+    );
+  });
+  it(`valid author id must be a number`, async () => {
+    await expect(service.getAuthor('authorId')).rejects.toThrow(
+      `authorId must be a number`,
+    );
   });
 });
 

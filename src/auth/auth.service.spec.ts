@@ -122,5 +122,7 @@ describe('Create JWT to SignIn', () => {
 });
 
 afterAll(async () => {
-  await prismaService.user.deleteMany();
+  await prismaService.user.delete({
+    where: { id: user.id },
+  });
 });

@@ -131,5 +131,7 @@ describe('Update User Role', () => {
 });
 
 afterAll(async () => {
-  await prismaService.user.deleteMany();
+  await prismaService.user.delete({
+    where: { id: userId },
+  });
 });
