@@ -50,9 +50,6 @@ export class AuthController {
   @ApiBearerAuth('access_token')
   @Patch('signout')
   async logout(@Request() req): Promise<MessageDto> {
-    //return await this.authService.signOut(req.user.id);
-    return await {
-      message: 'Successful logout',
-    };
+    return await this.authService.signOut(req.user.id);
   }
 }

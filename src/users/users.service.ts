@@ -62,7 +62,7 @@ export class UsersService {
   }
 
   async findOne(email: string): Promise<UserDto> {
-    return await this.prismaService.user.findUnique({
+    return await this.prismaService.user.findFirst({
       where: { email },
     });
   }
@@ -84,16 +84,6 @@ export class UsersService {
       },
     });
     return plainToClass(ResponseUpdateInfoDto, userUpdated);
-  }
-
-  async signOut(userId: number): Promise<UpdateInfoDto> {
-    const userLogOut = await this.prismaService.user.update({
-      where: { id: userId },
-      data: {
-        active: false,
-      },
-    });
-    return plainToClass(ResponseUpdateInfoDto, userLogOut);
   }
 
   async updateRole(idUser: string, newRole): Promise<UserDto> {
