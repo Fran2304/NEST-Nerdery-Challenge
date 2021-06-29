@@ -64,10 +64,10 @@ export class BooksController {
     return this.bookService.getBooks(paginationQuery);
   }
 
-  // See active books details costumer
+  // See active book details costumer
   @Get('/:idBook')
   getOneBook(@Param('idBook') id: number): Promise<DetailBookDto> {
-    return this.bookService.getOneBook(id);
+    return this.bookService.getOneBookActive(Number(id));
   }
 
   // Likes to books by costumer
@@ -83,7 +83,7 @@ export class BooksController {
     return this.bookService.processLikes(bookId, req.user.id, dataLike);
   }
 
-  //Updatae books manager
+  //Update books manager
   @Roles(Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Only MANAGER access' })
@@ -130,9 +130,4 @@ export class BooksController {
   ): Promise<Book> {
     return this.bookService.addUrlImage(id, file.buffer, file.originalname);
   }
-
-  // @Get('/test/:id')
-  // geOneActive(@Param('id') id: string) {
-  //   return this.bookService.getOneBookActive(Number(id))
-  // }
 }

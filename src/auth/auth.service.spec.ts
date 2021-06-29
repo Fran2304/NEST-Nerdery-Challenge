@@ -88,8 +88,8 @@ describe('Create JWT to SignIn', () => {
   it('should return access token', async () => {
     const res = await service.signIn({
       id: 1,
-      firstName:'',
-      lastName:'',
+      firstName: '',
+      lastName: '',
       username: 'test',
       email: 'test@test.com',
       role: 'CLIENT',

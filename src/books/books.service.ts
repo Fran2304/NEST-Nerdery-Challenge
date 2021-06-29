@@ -76,19 +76,13 @@ export class BooksService {
     return plainToClass(ActiveBookDto, activeBooks);
   }
 
-  async getOneBook(bookId): Promise<DetailBookDto> {
-    const oneBook = await this.prismaService.book.findUnique({
+  // Para todos
+  async findOne(bookId: number): Promise<DetailBookDto> {
+    return await this.prismaService.book.findUnique({
       where: {
         id: bookId,
       },
     });
-
-    if (!oneBook)
-      throw new NotFoundException(
-        `There's not any book with this Id: ${bookId}`,
-      );
-
-    return plainToClass(DetailBookDto, oneBook);
   }
 
   async getOneBookActive(bookId: number): Promise<ResponseBookDto> {
@@ -98,17 +92,22 @@ export class BooksService {
       },
     });
 
-    if (!book)
+    if (!book) {
       throw new NotFoundException(
         `There's not an book with this Id: ${bookId}`,
       );
+    }
     return plainToClass(ResponseBookDto, book);
   }
 
   async updateBook(bookId: number, updateBookDto) {
     const { categoryName, authorName, ...rest } = updateBookDto;
-    const bookToUpdate = await this.getOneBook(bookId);
-
+    const bookToUpdate = await this.findOne(bookId);
+    if (!bookToUpdate) {
+      throw new NotFoundException(
+        `There's not an book with this Id: ${bookId}`,
+      );
+    }
     let category;
     if (!categoryName) {
       category = bookToUpdate.categoryId;
@@ -135,18 +134,28 @@ export class BooksService {
   }
 
   async deleteBook(bookId: number) {
-    await this.getOneBook(bookId);
-    const bookToDelete = await this.prismaService.book.delete({
+    const bookToDelete = await this.findOne(bookId);
+    if (!bookToDelete) {
+      throw new NotFoundException(
+        `There's not an book with this Id: ${bookId}`,
+      );
+    }
+    const bookdeleted = await this.prismaService.book.delete({
       where: { id: bookId },
       select: {
         title: true,
       },
     });
-    return bookToDelete;
+    return bookdeleted;
   }
 
   async disableBook(bookId: number, state: BookStateDto) {
-    await this.getOneBook(bookId);
+    const bookToDisable = await this.findOne(bookId);
+    if (!bookToDisable) {
+      throw new NotFoundException(
+        `There's not an book with this Id: ${bookId}`,
+      );
+    }
     const bookUpdated = await this.prismaService.book.update({
       where: { id: bookId },
       data: {
