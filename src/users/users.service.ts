@@ -61,6 +61,14 @@ export class UsersService {
     });
   }
 
+  async findOneId(id: number): Promise<UserDto> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+    if (!user) throw new NotFoundException('Not found user');
+    return user;
+  }
+
   async findOne(email: string): Promise<UserDto> {
     return await this.prismaService.user.findFirst({
       where: { email },
