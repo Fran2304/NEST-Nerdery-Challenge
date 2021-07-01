@@ -120,11 +120,11 @@ export class BooksController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Only MANAGER access' })
   @ApiBearerAuth('access_token')
-  @Post(':id/attachment')
   @ApiConsumes('multipart/form-data')
   @ApiFile('file')
+  @Post('/:id/attachment')
   addUrlImage(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Book> {
     return this.bookService.addUrlImage(id, file.buffer, file.originalname);

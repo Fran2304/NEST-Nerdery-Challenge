@@ -20,6 +20,7 @@ import { User } from '@prisma/client';
 import { UpdateInfoDto } from '../users/dto/update-user.dto';
 import { InputInfoUserDto } from '../users/dto/input-user.dto';
 import { access } from 'fs';
+import { MessageDto } from './dto/message.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,9 +43,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<UserDto> {
     const userStored = await this.userService.findOne(email);
-    if (!userStored) {
-      throw new BadRequestException('Not found user');
-    }
+    if (!userStored) throw new BadRequestException('Not found user');
     const passwordChecked = await this.checkPassword(
       password,
       userStored.password,
@@ -97,8 +96,12 @@ export class AuthService {
     return this.createToken(user);
   }
 
-  async signOut(userId: number): Promise<UpdateInfoDto> {
-    const userLogOut = await this.userService.signOut(userId);
-    return plainToClass(ResponseUpdateInfoDto, userLogOut);
+  async signOut(userId: number): Promise<MessageDto> {
+    await this.userService.updateUser(userId, {
+      active: false,
+    });
+    return {
+      message: 'Successful logout',
+    };
   }
 }
