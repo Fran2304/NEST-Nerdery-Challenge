@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { throwError } from 'rxjs';
 import { ActiveBookDto } from '../books/dto/activeBooks.dto';
 import { CategoryService } from '../category/category.service';
 import { PrismaService } from '../common/services/prisma.service';
@@ -14,13 +13,11 @@ export class SearchBookService {
 
   async searchingByCategory(nameCategory): Promise<ActiveBookDto[]> {
     const { search } = nameCategory;
+    // search.toLowerCase;
     const category = await this.categoryService.getCategoryByName(
       search.toLowerCase(),
     );
 
-    if (!category) {
-      throw new NotFoundException(`This ${nameCategory} does not exist`);
-    }
     const books = await this.prismaService.book.findMany({
       where: {
         categoryId: category.id,
@@ -28,7 +25,9 @@ export class SearchBookService {
     });
 
     if (books.length === 0) {
-      throw new NotFoundException(`This ${nameCategory} does not have books`);
+      throw new NotFoundException(
+        `This ${search} category does not have books`,
+      );
     }
     return plainToClass(ActiveBookDto, books);
   }
