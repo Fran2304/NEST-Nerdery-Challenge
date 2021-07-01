@@ -289,21 +289,21 @@ export class BooksService {
     });
   }
 
-  async addUrlImage(
-    bookId: string,
-    imageBuffer: Buffer,
-    filename: string,
-  ): Promise<Book> {
-    const urlImage = await this.attachmentsService.createAttachment(
-      imageBuffer,
-      filename,
-    );
-    return await this.prismaService.book.update({
-      where: { id: Number(bookId) },
-      data: {
-        urlImage: urlImage.url,
-        imageId: urlImage.id,
-      },
-    });
-  }
+  // async addUrlImage(
+  //   bookId: string,
+  //   imageBuffer: Buffer,
+  //   filename: string,
+  // ): Promise<Book> {
+  //   const urlImage = await this.attachmentsService.createAttachment(
+  //     imageBuffer,
+  //     filename,
+  //   );
+  //   return await this.prismaService.book.update({
+  //     where: { id: Number(bookId) },
+  //     data: {
+  //       urlImage: urlImage.url,
+  //       imageId: urlImage.id,
+  //     },
+  //   });
+  // }
 }

@@ -41,8 +41,7 @@ export class ItemService {
       },
     });
 
-    const cardWithBook = { ...book, ...cardItem };
-    return plainToClass(ItemCardDto, cardWithBook);
+    return plainToClass(ItemCardDto, { ...book, ...cardItem });
   }
 
   async getCardItemFromUser(userId: number): Promise<ArrayCardItemsDto[]> {

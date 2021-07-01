@@ -13,7 +13,6 @@ export class SearchBookService {
 
   async searchingByCategory(nameCategory): Promise<ActiveBookDto[]> {
     const { search } = nameCategory;
-    // search.toLowerCase;
     const category = await this.categoryService.getCategoryByName(
       search.toLowerCase(),
     );

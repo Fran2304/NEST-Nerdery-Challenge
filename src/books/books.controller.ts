@@ -115,18 +115,18 @@ export class BooksController {
     return this.bookService.deleteBook(id);
   }
 
-  @Roles(Role.MANAGER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'Only MANAGER access' })
-  @ApiBearerAuth('access_token')
-  @ApiConsumes('multipart/form-data')
-  @ApiFile('file')
-  @Post('/:id/attachment')
-  addUrlImage(
-    @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<Book> {
-    return this.bookService.addUrlImage(id, file.buffer, file.originalname);
-  }
+  // @Roles(Role.MANAGER)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @UseInterceptors(FileInterceptor('file'))
+  // @ApiOperation({ summary: 'Only MANAGER access' })
+  // @ApiBearerAuth('access_token')
+  // @ApiConsumes('multipart/form-data')
+  // @ApiFile('file')
+  // @Post('/:id/attachment')
+  // addUrlImage(
+  //   @Param('id') id: string,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ): Promise<Book> {
+  //   return this.bookService.addUrlImage(id, file.buffer, file.originalname);
+  // }
 }
