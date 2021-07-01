@@ -107,7 +107,7 @@ describe('Create a book', () => {
     });
 
     expect(bookCreated).toHaveProperty('id');
-    expect(bookCreated.title).toEqual('La Odisea');
+    expect(bookCreated.title).toEqual('la odisea');
     expect(bookCreated.active).toEqual(true);
   });
   it('should return a error if the book already exists', async () => {

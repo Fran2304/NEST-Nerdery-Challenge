@@ -25,7 +25,7 @@ export class BooksService {
   async createBook(createBookDto: CreateBookDto): Promise<Book> {
     const existingBook = await this.prismaService.book.findFirst({
       where: {
-        title: createBookDto.title,
+        title: createBookDto.title.toLowerCase(),
       },
     });
     if (existingBook)
@@ -39,7 +39,7 @@ export class BooksService {
     const author = await this.preloadAuthorByName(createBookDto.authorName);
     const bookCreated = await this.prismaService.book.create({
       data: {
-        title: createBookDto.title,
+        title: createBookDto.title.toLowerCase(),
         description: createBookDto.description,
         yearPublished: createBookDto.yearPublished,
         quantity: createBookDto.quantity,

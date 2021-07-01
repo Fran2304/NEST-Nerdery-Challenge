@@ -101,6 +101,7 @@ describe('Create Purcharse', () => {
     const res = await service.createPurchase(user.id, {
       status: 'PAID',
     });
+
     expect(res).toHaveProperty('total');
     expect(cart.id).not.toBeNull();
   });
@@ -110,6 +111,17 @@ describe('Get Paid Purcharse', () => {
   it('Return paid purcharse', async () => {
     const res = await service.getProductsPurchase(user.id);
     expect(res).toHaveLength(1);
+  });
+  it('Return paid purcharse', async () => {
+    await itemService.createCardItem(user.id, {
+      count: 1,
+      bookId: book.id,
+    });
+    await service.createPurchase(user.id, {
+      status: 'PENDING',
+    });
+    const res = await service.getProductsPurchase(user.id);
+    expect(res).toHaveLength(2);
   });
 });
 
