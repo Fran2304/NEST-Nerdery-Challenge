@@ -20,26 +20,67 @@ let book: Book;
 
 beforeAll(async () => {
   const module: TestingModule = await Test.createTestingModule({
-    imports: [CommonModule, ItemService, BooksModule, AttachmentsModule],
+    imports: [CommonModule, ItemModule, BooksModule, AttachmentsModule],
     providers: [
       ShoppingCardService,
       ItemService,
       BooksService,
       AttachmentsService,
       UsersService,
-      PrismaService,
     ],
   }).compile();
 
   service = module.get<ShoppingCardService>(ShoppingCardService);
+  itemService = module.get<ItemService>(ItemService);
   prismaService = module.get<PrismaService>(PrismaService);
 
-  user = await prismaService.user.findFirst({
-    where: { email: 'welcome@test.com' },
+  await prismaService.user.create({
+    data: {
+      username: 'Pblito23',
+      password: 'Prueba123',
+      email: 'pablo@gmail.com',
+      hashActivation: 'prueba',
+    },
+  });
+  await prismaService.category.createMany({
+    data: [
+      {
+        name: 'fantasia',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  await prismaService.author.createMany({
+    data: [
+      {
+        fullName: 'Stephanie Meyer',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  await prismaService.book.createMany({
+    data: [
+      {
+        title: 'Crepusculo',
+        description: 'Historia de amor ente jovenes vampiros',
+        yearPublished: 2010,
+        price: 30.0,
+        urlImage: 'https://image.com',
+        authorId: 1,
+        categoryId: 1,
+        quantity: 10,
+      },
+    ],
+    skipDuplicates: true,
+  });
+  book = await prismaService.book.findUnique({
+    where: {
+      title: 'Crepusculo',
+    },
   });
 
-  book = await prismaService.book.findFirst({
-    where: { title: 'One Hundred Years of Solitude' },
+  user = await prismaService.user.findFirst({
+    where: { email: 'pablo@gmail.com' },
   });
 });
 
@@ -53,27 +94,20 @@ describe('Create Purcharse', () => {
   });
 
   it('Success create purcharse', async () => {
-    // const cart = await itemService.createCardItem(user.id, {
-    //   count: 1,
-    //   bookId: book.id,
-    // })
-    // console.log('cart', cart)
-
-    // const res = await service.createPurchase(user.id, {
-    //   status: 'PAID',
-    // });
-
-    // expect(res).toHaveProperty('total');
-    // expect(cart.id).not.toBeNull();
+    const cart = await itemService.createCardItem(user.id, {
+      count: 1,
+      bookId: book.id,
+    });
+    const res = await service.createPurchase(user.id, {
+      status: 'PAID',
+    });
+    expect(res).toHaveProperty('total');
+    expect(cart.id).not.toBeNull();
   });
 });
 
-describe.skip('Get Paid Purcharse', () => {
+describe('Get Paid Purcharse', () => {
   it('Return paid purcharse', async () => {
-    await service.createPurchase(user.id, {
-      status: 'PENDING',
-    });
-
     const res = await service.getProductsPurchase(user.id);
     expect(res).toHaveLength(1);
   });
@@ -82,4 +116,35 @@ describe.skip('Get Paid Purcharse', () => {
 afterAll(async () => {
   await prismaService.cardItem.deleteMany();
   await prismaService.shoppingCard.deleteMany();
+});
+
+// Clean database
+const clearDatabase = async function () {
+  const tableNames = [
+    'CardItem',
+    'ShoppingCard',
+    'Book',
+    'User',
+    'Category',
+    'Author',
+  ];
+  try {
+    for (const tableName of tableNames) {
+      await prismaService.$queryRaw(`DELETE FROM "${tableName}";`);
+      if (!['Store'].includes(tableName)) {
+        await prismaService.$queryRaw(
+          `ALTER SEQUENCE "${tableName}_id_seq" RESTART WITH 1;`,
+        );
+      }
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+  } finally {
+    await prismaService.$disconnect();
+  }
+};
+
+afterAll(async () => {
+  await clearDatabase();
 });

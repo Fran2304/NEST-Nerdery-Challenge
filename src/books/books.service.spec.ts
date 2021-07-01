@@ -4,12 +4,14 @@ import { AttachmentsModule } from '../attachments/attachments.module';
 import { CommonModule } from '../common/common.module';
 import { PrismaService } from '../common/services/prisma.service';
 import { BooksService } from './books.service';
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 let service: BooksService;
 let prismaService: PrismaService;
 
+let bookId: number;
+let bookId2: number;
 beforeAll(async () => {
   const module: TestingModule = await Test.createTestingModule({
     imports: [CommonModule, AttachmentsModule],
@@ -73,6 +75,20 @@ beforeAll(async () => {
     ],
     skipDuplicates: true,
   });
+  const book = await prismaService.book.findUnique({
+    where: {
+      title: 'Crepusculo',
+    },
+  });
+
+  bookId = book.id;
+  const book2 = await prismaService.book.findUnique({
+    where: {
+      title: 'El ultimo dictador',
+    },
+  });
+
+  bookId2 = book2.id;
 });
 
 // Test create a book
@@ -89,8 +105,6 @@ describe('Create a book', () => {
       categoryName: 'clasico universal',
       quantity: 15,
     });
-
-    console.log(bookCreated);
 
     expect(bookCreated).toHaveProperty('id');
     expect(bookCreated.title).toEqual('La Odisea');
@@ -128,7 +142,7 @@ describe('show all the book active and inactive', () => {
 // Get one book active or inactive
 describe('show all the book active and inactive', () => {
   it('should return the number of books created', async () => {
-    const allBooks = await service.findOne(1);
+    const allBooks = await service.findOne(bookId);
     expect(allBooks.title).toBe('Crepusculo');
   });
 });
@@ -155,7 +169,6 @@ describe('update a book', () => {
 
   it('should update a book with new category and author', async () => {
     const bookToUpdate = await service.updateBook(3, updatedNewInfo);
-    console.log(bookToUpdate);
     expect(bookToUpdate.title).toBe('Las mil y un noches');
     expect(bookToUpdate).toHaveProperty('categoryId');
     expect(bookToUpdate).toHaveProperty('authorId');
@@ -187,7 +200,7 @@ describe('disable book', () => {
   });
 
   it('should return the book disabled', async () => {
-    const bookInactive = await service.disableBook(1, state);
+    const bookInactive = await service.disableBook(bookId, state);
     expect(bookInactive).toHaveProperty('title');
     expect(bookInactive).toEqual({
       active: false,
@@ -215,8 +228,8 @@ describe('get an active book', () => {
       `There's not an book with this Id: 1`,
     );
   });
-  it('should and active book', async () => {
-    const activeBook = await service.getOneBookActive(2);
+  it('should return an active book', async () => {
+    const activeBook = await service.getOneBookActive(bookId2);
     expect(activeBook.title).toBe('El ultimo dictador');
   });
 });
@@ -253,9 +266,7 @@ describe('process like and unlikes', () => {
   // Dislike
   it('should return 0 if we give a dislike to a post that has 1 like', async () => {
     const likes = await service.findOne(2);
-    console.log('before', likes.likesQuantity);
     const postToDislike = await service.processLikes(2, 1, jsonDislike);
-    console.log('after', likes.likesQuantity);
     expect(postToDislike).toEqual(0);
   });
   // it('should return error if we give a dislike to a post that was not previously liked for user', async () => {
@@ -275,7 +286,7 @@ describe('delete a book', () => {
   });
 
   it('should return the book deleted', async () => {
-    const bookToDelete = await service.deleteBook(1);
+    const bookToDelete = await service.deleteBook(bookId);
 
     expect(bookToDelete.title).toBe('Crepusculo');
   });
@@ -297,7 +308,7 @@ const clearDatabase = async function () {
     // eslint-disable-next-line no-console
     console.error(err);
   } finally {
-    await prisma.$disconnect();
+    await prismaService.$disconnect();
   }
 };
 
