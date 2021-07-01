@@ -14,7 +14,7 @@ import { UserDto } from '../users/dto/user.dto';
 let service: AuthService;
 let prismaService: PrismaService;
 
-beforeEach(async () => {
+beforeAll(async () => {
   const module: TestingModule = await Test.createTestingModule({
     imports: [
       CommonModule,

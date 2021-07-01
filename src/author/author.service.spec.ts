@@ -2,11 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommonModule } from '../common/common.module';
 import { PrismaService } from '../common/services/prisma.service';
 import { AuthorService } from './author.service';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 let service: AuthorService;
 let prismaService: PrismaService;
 
-beforeEach(async () => {
+beforeAll(async () => {
   const module: TestingModule = await Test.createTestingModule({
     imports: [CommonModule],
     providers: [AuthorService],
@@ -54,6 +56,26 @@ describe('Get author', () => {
   });
 });
 
+// Clean database
+const clearDatabase = async function () {
+  const tableNames = ['Author', 'Category', 'Book', 'User'];
+  try {
+    for (const tableName of tableNames) {
+      await prismaService.$queryRaw(`DELETE FROM "${tableName}";`);
+      if (!['Store'].includes(tableName)) {
+        await prismaService.$queryRaw(
+          `ALTER SEQUENCE "${tableName}_id_seq" RESTART WITH 1;`,
+        );
+      }
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
 afterAll(async () => {
-  await prismaService.author.deleteMany();
+  await clearDatabase();
 });

@@ -7,18 +7,11 @@ import { PrismaService } from '../common/services/prisma.service';
 import { InputInfoUserDto } from './dto/input-user.dto';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-<<<<<<< HEAD
-import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
-import { AppModule } from '../app.module';
-import { validate } from 'class-validator';
-import { Role } from '../common/enums/role.enum';
-=======
->>>>>>> 824ddde46d19fa8da0bcadc673a40d2ecc27a07a
 
 let service: UsersService;
 let prismaService: PrismaService;
 
-beforeEach(async () => {
+beforeAll(async () => {
   const module: TestingModule = await Test.createTestingModule({
     imports: [CommonModule],
     providers: [UsersService],

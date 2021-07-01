@@ -44,7 +44,6 @@ describe('Add book to cart', () => {
       count: 2,
       bookId: book.id,
     });
-    
     expect(res).toHaveProperty('subtotal');
     expect(res.subtotal).toEqual(39);
   });
