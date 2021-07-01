@@ -8,7 +8,7 @@ import { InputInfoUserDto } from './dto/input-user.dto';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
-import { AppModule } from 'app.module';
+import { AppModule } from '../app.module';
 import { validate } from 'class-validator';
 import { Role } from '../common/enums/role.enum';
 

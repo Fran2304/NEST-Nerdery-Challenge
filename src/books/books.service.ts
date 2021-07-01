@@ -27,10 +27,9 @@ export class BooksService {
         title: createBookDto.title,
       },
     });
-    console.log(existingBook);
     if (existingBook)
       throw new BadRequestException(
-        `The ${createBookDto.title} book has already exist`,
+        `The book ${createBookDto.title} has already exist`,
       );
 
     const category = await this.preloadCategoryByName(
@@ -91,16 +90,16 @@ export class BooksService {
         AND: [{ id: bookId }, { active: true }],
       },
     });
-
     if (!book) {
       throw new NotFoundException(
         `There's not an book with this Id: ${bookId}`,
       );
     }
+
     return plainToClass(ResponseBookDto, book);
   }
 
-  async updateBook(bookId: number, updateBookDto) {
+  async updateBook(bookId: number, updateBookDto): Promise<Book> {
     const { categoryName, authorName, ...rest } = updateBookDto;
     const bookToUpdate = await this.findOne(bookId);
     if (!bookToUpdate) {
@@ -194,7 +193,6 @@ export class BooksService {
   }
 
   async likeBook(bookId, uid, quantityLikes) {
-    // console.log('like', bookId, uid, quantityLikes);
     const bookLike = await this.prismaService.booksLikes.findFirst({
       where: {
         bookId: bookId,
@@ -226,7 +224,6 @@ export class BooksService {
   }
 
   async dislikeBook(bookId, uid, quantityLikes) {
-    console.log('dislike', bookId, uid, quantityLikes);
     const bookLike = await this.prismaService.booksLikes.findFirst({
       where: {
         bookId: bookId,
@@ -252,7 +249,7 @@ export class BooksService {
         id: bookLike?.id,
       },
     });
-
+    console.log(updateLikes.likesQuantity);
     return updateLikes.likesQuantity;
   }
 
@@ -263,7 +260,6 @@ export class BooksService {
         books: true,
       },
     });
-    console.log('existing', existingAuthor);
     if (existingAuthor) {
       return existingAuthor;
     }

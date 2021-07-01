@@ -44,7 +44,6 @@ export class BooksController {
   @ApiBearerAuth('access_token')
   @Post()
   createBook(@Body() createBook: CreateBookDto): Promise<Book> {
-    console.log(createBook);
     return this.bookService.createBook(createBook);
   }
 
@@ -67,7 +66,7 @@ export class BooksController {
   // See active book details costumer
   @Get('/:idBook')
   getOneBook(@Param('idBook') id: number): Promise<DetailBookDto> {
-    return this.bookService.getOneBookActive(Number(id));
+    return this.bookService.getOneBookActive(id);
   }
 
   // Likes to books by costumer
