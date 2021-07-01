@@ -14,7 +14,7 @@ let prismaService: PrismaService;
 let user: User;
 let book: Book;
 
-beforeEach(async () => {
+beforeAll(async () => {
   const module: TestingModule = await Test.createTestingModule({
     imports: [CommonModule, BooksModule, AttachmentsModule],
     providers: [
@@ -44,6 +44,7 @@ describe('Add book to cart', () => {
       count: 2,
       bookId: book.id,
     });
+    
     expect(res).toHaveProperty('subtotal');
     expect(res.subtotal).toEqual(39);
   });
@@ -59,7 +60,6 @@ describe('Add book to cart', () => {
 
   it('get detail of cart', async () => {
     const res = await service.getCardItemFromUser(user.id);
-    cart = res;
     expect(res[0].count).toEqual(2);
     expect(res[0].subtotal).toEqual(39);
   });

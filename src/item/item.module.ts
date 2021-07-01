@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AttachmentsService } from 'src/attachments/attachments.service';
+import { AttachmentsService } from '../attachments/attachments.service';
 import { UsersService } from '../users/users.service';
 import { BooksService } from '../books/books.service';
 import { CommonModule } from '../common/common.module';

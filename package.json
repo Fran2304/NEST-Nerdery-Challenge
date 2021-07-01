@@ -20,6 +20,7 @@
     "test:user": "npx dotenv -e .env.test -- jest users/users.service.spec.ts",
     "test:author": "npx dotenv -e .env.test -- jest author/author.service.spec.ts --detectOpenHandles",
     "test:item": "npx dotenv -e .env.test -- jest item/item.service.spec.ts --detectOpenHandles",
+    "test:shopping": "npx dotenv -e .env.test -- jest shopping-card/shopping-card.service.spec.ts --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
