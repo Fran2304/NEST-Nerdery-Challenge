@@ -14,6 +14,7 @@ export class SearchBookService {
 
   async searchingByCategory(nameCategory): Promise<ActiveBookDto[]> {
     const { search } = nameCategory;
+
     const category = await this.categoryService.getCategoryByName(
       search.toLowerCase(),
     );

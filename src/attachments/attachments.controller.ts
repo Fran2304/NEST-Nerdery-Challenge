@@ -20,6 +20,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { CreateAttachmentDto } from './dto/create-attachment.dto';
 import { ApiFile } from '../common/helpers/upload-swagger-decorator';
 
 @ApiTags('Attachments')
@@ -43,4 +44,18 @@ export class AttachmentsController {
       file.originalname,
     );
   }
+
+  // @Post()
+  // @ApiConsumes('multipart/form-data')
+  // @ApiFile('file')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async createImage(@UploadedFile() file: Express.Multer.File) {
+  //   return await this.attachmentsService.createImage(file);
+  // }
 }
+
+// uuid: string;
+// contentType: ContentTypeEnum;
+// ext: FileExtensionEnum;
+// parentType: ParentEnum;
+// filename: string;

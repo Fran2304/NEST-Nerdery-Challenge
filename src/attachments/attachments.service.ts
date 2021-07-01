@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { config as configAWS, S3 } from 'aws-sdk';
 import { PrismaService } from '../common/services/prisma.service';
-import { v4 as uuid } from 'uuid';
+import { uuid } from 'uuidv4';
 import { Attachment } from '@prisma/client';
+import { AttachmentDirectoryEnum, ParentEnum } from './enums/attachement.enum';
+import { CreateAttachmentDto } from './dto/create-attachment.dto';
+import { plainToClass } from 'class-transformer';
+import { AttachmentDto } from './dto/attachment.dto';
 
 @Injectable()
 export class AttachmentsService {
@@ -37,4 +41,40 @@ export class AttachmentsService {
       },
     });
   }
+  // async createImage(input): Promise<AttachmentDto> {
+  //   console.log('input', input);
+  //   const attachment = await this.createAttachment({
+  //     ...input,
+  //     parentType: ParentEnum.BOOK,
+  //     uuid: '123456',
+  //   });
+
+  //   return attachment;
+  // }
+
+  // async createAttachment(file: CreateAttachmentDto) {
+  //   const path = AttachmentDirectoryEnum[file.parentType].replace(
+  //     '{uuid}',
+  //     file.uuid,
+  //   );
+
+  //   const attachment = await this.prismaService.attachment.create({
+  //     data: {
+  //       contentType: file.contentType,
+  //       key: `${uuid()}-${file.filename}`,
+  //       ext: file.ext,
+  //       path,
+  //     },
+  //   });
+
+  //   //Pre-signing a 'putObject' (asynchronously)
+  //   const params = {
+  //     Key: `${path}/${attachment.key}.${attachment.ext}`,
+  //     ContentType: attachment.contentType,
+  //     Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+  //     Expires: process.env.AWS_EXPIRATION_TIME,
+  //   };
+  //   const signedUrl = this.s3.getSignedUrl('putObject', params);
+  //   return plainToClass(AttachmentDto, { signedUrl, ...attachment });
+  // }
 }

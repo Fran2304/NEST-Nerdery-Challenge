@@ -108,6 +108,7 @@ model BooksLikes{
   user User @relation(fields: [userId], references:[id])
   book Book  @relation(fields: [bookId], references:[id])
 }
+
 // model Attachment {
 //   id          Int      @id @default(autoincrement())
 //   uuid        String   @unique @default(uuid())
