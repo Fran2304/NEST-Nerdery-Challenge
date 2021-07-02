@@ -9,11 +9,3 @@ export enum ContentTypeEnum {
   'JPG' = 'image/jpg',
   'JPEG' = 'image/jpeg',
 }
-
-export enum ParentEnum {
-  BOOK = 'BOOK',
-}
-
-export enum AttachmentDirectoryEnum {
-  BOOK = 'attachments/book/{uuid}/image',
-}

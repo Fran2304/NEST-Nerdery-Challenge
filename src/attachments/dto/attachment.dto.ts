@@ -5,12 +5,6 @@ export class AttachmentDto {
   @Exclude()
   readonly id: number;
 
-  @Exclude()
-  readonly uuid: string;
-
-  @Expose()
-  readonly path: string;
-
   @Expose()
   readonly key: string;
 

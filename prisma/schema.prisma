@@ -103,29 +103,27 @@ model ShoppingCard {
 model BooksLikes{
   id Int @id @default(autoincrement())
   userId Int @map(name:"user_id")
-  bookId Int @map(name: "book_id")
+  bookId Int? @map(name: "book_id")
   like Boolean @default(false)
   user User @relation(fields: [userId], references:[id])
-  book Book  @relation(fields: [bookId], references:[id])
+  book Book?  @relation(fields: [bookId], references:[id])
 }
-
-// model Attachment {
-//   id          Int      @id @default(autoincrement())
-//   uuid        String   @unique @default(uuid())
-//   path        String
-//   key         String
-//   ext         String
-//   contentType String   @map(name: "content_type")
-
-//   books       Book[]
-//   createdAt   DateTime @default(now()) @map(name: "created_at")
-// }
 
 model Attachment {
   id          Int      @id @default(autoincrement())
   key         String
-  url         String
+  ext         String
+  contentType String   @map(name: "content_type")
 
   books       Book[]
   createdAt   DateTime @default(now()) @map(name: "created_at")
 }
+
+// model Attachment {
+//   id          Int      @id @default(autoincrement())
+//   key         String
+//   url         String
+
+//   books       Book[]
+//   createdAt   DateTime @default(now()) @map(name: "created_at")
+// }

@@ -2,6 +2,7 @@ import {
   UseGuards,
   Controller,
   Post,
+  Request,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -20,7 +21,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateAttachmentDto } from './dto/create-attachment.dto';
 import { ApiFile } from '../common/helpers/upload-swagger-decorator';
 
 @ApiTags('Attachments')
@@ -29,30 +29,27 @@ export class AttachmentsController {
   constructor(private readonly attachmentsService: AttachmentsService) {}
 
   @Roles(Role.MANAGER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  //@UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Only MANAGER access' })
   @ApiBearerAuth('access_token')
   @Post()
   @ApiConsumes('multipart/form-data')
   @ApiFile('file')
   @UseInterceptors(FileInterceptor('file'))
-  async createAttachment(
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<Attachment> {
-    return await this.attachmentsService.createAttachment(
-      file.buffer,
-      file.originalname,
+  async createImage(@Request() req) {
+    return await this.attachmentsService.endpointToUpload(
+      req.headers['content-type'],
     );
   }
-
-  // @Post()
-  // @ApiConsumes('multipart/form-data')
-  // @ApiFile('file')
-  // @UseInterceptors(FileInterceptor('file'))
-  // async createImage(@UploadedFile() file: Express.Multer.File) {
-  //   return await this.attachmentsService.createImage(file);
-  // }
 }
+
+// @Post()
+// @ApiConsumes('multipart/form-data')
+// @ApiFile('file')
+// @UseInterceptors(FileInterceptor('file'))
+// async createImage(@UploadedFile() file: Express.Multer.File) {
+//   return await this.attachmentsService.createImage(file);
+// }
 
 // uuid: string;
 // contentType: ContentTypeEnum;
