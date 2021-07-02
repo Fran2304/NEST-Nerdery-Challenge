@@ -1,9 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { config as configAWS, S3 } from 'aws-sdk';
 import { PrismaService } from '../common/services/prisma.service';
 import { nanoid } from 'nanoid';
 import { plainToClass } from 'class-transformer';
 import { AttachmentDto } from './dto/attachment.dto';
+import { BooksService } from '../books/books.service';
 
 @Injectable()
 export class AttachmentsService {
@@ -19,17 +21,13 @@ export class AttachmentsService {
     this.s3 = new S3();
   }
 
-  async endpointToUpload(input) {
-    const allowContentType = ['image/png', 'image/jpg', 'image/jpeg'];
-    const hasContentType = allowContentType.find((type) =>
-      input.includes(type),
-    );
-    if (!hasContentType) throw new BadRequestException('Invalid extension');
+  async createSignedUrl(input, bookId) {
     const ext = input.split('/')[1];
 
     //Create attachment in table
     const attachment = await this.prismaService.attachment.create({
       data: {
+        bookId,
         contentType: input,
         key: nanoid(),
         ext,
@@ -37,13 +35,21 @@ export class AttachmentsService {
     });
 
     //AWS: Pre-signing a 'putObject' (asynchronously)
-    const params = {
+    const signedUrl = this.s3.getSignedUrl('putObject', {
       Key: `${attachment.key}.${attachment.ext}`,
       ContentType: attachment.contentType,
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Expires: Number(process.env.AWS_EXPIRATION_TIME),
-    };
-    const signedUrl = this.s3.getSignedUrl('putObject', params);
-    return plainToClass(AttachmentDto, { signedUrl, ...attachment });
+    });
+    return { signedUrl, ...attachment };
+  }
+
+  // key → attachment.key
+  getSignedURL(key, ext): string {
+    return this.s3.getSignedUrl('getObject', {
+      Key: `${key}.${ext}`,
+      Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+      Expires: Number(process.env.AWS_EXPIRATION_TIME),
+    });
   }
 }

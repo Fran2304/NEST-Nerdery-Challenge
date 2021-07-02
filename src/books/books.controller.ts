@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Body,
   Controller,
@@ -115,18 +116,23 @@ export class BooksController {
     return this.bookService.deleteBook(id);
   }
 
-  // @Roles(Role.MANAGER)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @UseInterceptors(FileInterceptor('file'))
-  // @ApiOperation({ summary: 'Only MANAGER access' })
-  // @ApiBearerAuth('access_token')
-  // @ApiConsumes('multipart/form-data')
-  // @ApiFile('file')
-  // @Post('/:id/attachment')
-  // addUrlImage(
-  //   @Param('id') id: string,
-  //   @UploadedFile() file: Express.Multer.File,
-  // ): Promise<Book> {
-  //   return this.bookService.addUrlImage(id, file.buffer, file.originalname);
+  //Get upload images endpoint
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('/:id/image')
+  @ApiOperation({ summary: 'Only MANAGER access' })
+  @ApiBearerAuth('access_token')
+  endpointToUpload(@Request() req, @Param('id') id: number) {
+    return this.bookService.endpointToUpload(req.headers['content-type'], id);
+  }
+
+  @Patch('/:id/image')
+  uploadUrlImage(@Param('id') id: number){
+    return this.bookService.uploadUrlImage(id)
+  }
+
+  // @Get('/:id/image')
+  // getUrl(@Param('id') id: number){
+  //   return this.bookService.getUrlImages(id)
   // }
 }

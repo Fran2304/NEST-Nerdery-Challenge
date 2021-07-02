@@ -36,7 +36,8 @@ export class UpdateBookDto {
 
   @IsString()
   @IsOptional()
-  readonly urlImage: string;
+  @IsNotEmpty()
+  readonly urlImage?: string;
 
   @IsString()
   @IsOptional()
