@@ -1,5 +1,5 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
-
 import { PrismaService } from '../common/services/prisma.service';
 import { Author, Book, Category } from '@prisma/client';
 import { CreateBookDto } from './dto/createBook.dto';
@@ -14,6 +14,8 @@ import { ResponseBookDto } from './dto/response-book.dto';
 import { LikeBookDto } from './dto/likeBookDto.dto';
 import { AttachmentsService } from '../attachments/attachments.service';
 import { String } from 'aws-sdk/clients/cloudtrail';
+import { AttachmentDto } from 'src/attachments/dto/attachment.dto';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class BooksService {
@@ -44,7 +46,6 @@ export class BooksService {
         yearPublished: createBookDto.yearPublished,
         quantity: createBookDto.quantity,
         price: createBookDto.price,
-        urlImage: createBookDto.urlImage,
         authorId: author.id,
         categoryId: category.id,
       },
@@ -266,7 +267,6 @@ export class BooksService {
     }
     return await this.prismaService.author.create({ data: { fullName: name } });
   }
-
   private async preloadCategoryByName(nameCategory: string): Promise<Category> {
     const existingCategory = await this.prismaService.category.findUnique({
       where: { name: nameCategory },
@@ -289,21 +289,39 @@ export class BooksService {
     });
   }
 
-  async addUrlImage(
-    bookId: string,
-    imageBuffer: Buffer,
-    filename: string,
-  ): Promise<Book> {
-    const urlImage = await this.attachmentsService.createAttachment(
-      imageBuffer,
-      filename,
+  async endpointToUpload(input, bookId): Promise<AttachmentDto> {
+    const book = this.findOne(bookId);
+    if (!book) throw new BadRequestException(`This ${bookId} doesn't exist`);
+
+    const allowContentType = ['image/png', 'image/jpg', 'image/jpeg'];
+    const hasContentType = allowContentType.find((type) =>
+      input.includes(type),
     );
-    return await this.prismaService.book.update({
-      where: { id: Number(bookId) },
-      data: {
-        urlImage: urlImage.url,
-        imageId: urlImage.id,
-      },
+    if (!hasContentType) throw new BadRequestException('Invalid extension');
+
+    const signedUrlAttach = await this.attachmentsService.createSignedUrl(
+      input,
+      bookId,
+    );
+
+    return plainToClass(AttachmentDto, signedUrlAttach);
+  }
+
+  async getUrlImages(bookId: number): Promise<string> {
+    const attachemt = await this.prismaService.attachment.findFirst({
+      where: { bookId },
     });
+    return this.attachmentsService.getSignedURL(attachemt.key, attachemt.ext);
+    // const urlStored = attachemts.map((attachemt) =>
+    //   this.attachmentsService.getSignedURL(attachemt.key, attachemt.ext)
+    // )
+  }
+
+  async uploadUrlImage(bookId: number) : Promise<Book> {
+    const book = await this.findOne(bookId);
+    if (!book) throw new BadRequestException(`This ${bookId} doesn't exist`);
+    
+    const urlImage = await this.getUrlImages(bookId)
+    return await this.updateBook(bookId, { urlImage })
   }
 }
