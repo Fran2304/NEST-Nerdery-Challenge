@@ -64,7 +64,7 @@ export class BooksService {
 
   async getActiveBooks(
     paginationQuery: PaginationQueryDto,
-  ): Promise<ActiveBookDto[]> {
+  ): Promise<Book[]> {
     const { page, perPage } = paginationQuery;
     const paginationParams = paginatedHelper({ page, perPage });
     const activeBooks = await this.prismaService.book.findMany({
@@ -74,10 +74,10 @@ export class BooksService {
       ...paginationParams,
     });
 
-    return plainToClass(ActiveBookDto, activeBooks);
+    return activeBooks;
   }
 
-  // Para todos
+  // For all books AAdd validation 
   async findOne(bookId: number): Promise<DetailBookDto> {
     return await this.prismaService.book.findUnique({
       where: {
@@ -311,6 +311,7 @@ export class BooksService {
     const attachemt = await this.prismaService.attachment.findFirst({
       where: { bookId },
     });
+    //console.log('attachemt', attachemt)
     return this.attachmentsService.getSignedURL(attachemt.key, attachemt.ext);
     // const urlStored = attachemts.map((attachemt) =>
     //   this.attachmentsService.getSignedURL(attachemt.key, attachemt.ext)

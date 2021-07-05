@@ -55,13 +55,11 @@ describe('Valid SignUp to User', () => {
 
   it('should return required fields', async () => {
     await expect(
-      service.signUp(
-        plainToClass(InputInfoUserDto, {
-          username: '',
-          email: '',
-          password: '',
-        }),
-      ),
+      service.signUp({
+        username: '',
+        email: '',
+        password: '',
+      }),
     ).rejects.toThrow(`Password can't be empty`);
   });
 });

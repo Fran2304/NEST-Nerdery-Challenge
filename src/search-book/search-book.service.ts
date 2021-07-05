@@ -3,6 +3,7 @@ import { plainToClass } from 'class-transformer';
 import { ActiveBookDto } from '../books/dto/activeBooks.dto';
 import { CategoryService } from '../category/category.service';
 import { PrismaService } from '../common/services/prisma.service';
+import { SearchCategory } from './dto/search-category.dto';
 
 @Injectable()
 export class SearchBookService {
@@ -11,7 +12,9 @@ export class SearchBookService {
     private readonly categoryService: CategoryService,
   ) {}
 
-  async searchingByCategory(nameCategory): Promise<ActiveBookDto[]> {
+  async searchingByCategory(
+    nameCategory: SearchCategory,
+  ): Promise<ActiveBookDto[]> {
     const { search } = nameCategory;
     const category = await this.categoryService.getCategoryByName(
       search.toLowerCase(),
