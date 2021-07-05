@@ -25,7 +25,7 @@ export class CreateBookDto {
   readonly price: number
   
   @Exclude()
-  readonly urlImage: string;
+  readonly urlImage?: string;
 
   @IsPositive()
   @IsNumber()

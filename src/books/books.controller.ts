@@ -28,7 +28,9 @@ import { Express } from 'express';
 import {
   ApiBearerAuth,
   ApiConsumes,
+  ApiHeader,
   ApiOperation,
+  ApiProduces,
   ApiTags,
 } from '@nestjs/swagger';
 import { ApiFile } from '../common/helpers/upload-swagger-decorator';
@@ -122,13 +124,15 @@ export class BooksController {
   @Post('/:id/image')
   @ApiOperation({ summary: 'Only MANAGER access' })
   @ApiBearerAuth('access_token')
+  //@ApiConsumes('image/png')
+  //@ApiHeader({ name: 'content-type' })
   endpointToUpload(@Request() req, @Param('id') id: number) {
     return this.bookService.endpointToUpload(req.headers['content-type'], id);
   }
 
   @Patch('/:id/image')
-  uploadUrlImage(@Param('id') id: number){
-    return this.bookService.uploadUrlImage(id)
+  uploadUrlImage(@Param('id') id: number) {
+    return this.bookService.uploadUrlImage(id);
   }
 
   // @Get('/:id/image')

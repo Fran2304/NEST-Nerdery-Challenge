@@ -14,8 +14,6 @@ import { TokenDto } from './dto/token.dto';
 import { DataUserDto } from './dto/dataUser.dto';
 import { PayloadUserDto } from './dto/payload.dto';
 import { UserDto } from '../users/dto/user.dto';
-import { ResponseUpdateInfoDto } from '../users/dto/responseUser.dto';
-import { plainToClass } from 'class-transformer';
 import { User } from '@prisma/client';
 import { UpdateInfoDto } from '../users/dto/update-user.dto';
 import { InputInfoUserDto } from '../users/dto/input-user.dto';
@@ -68,16 +66,13 @@ export class AuthService {
     };
   }
 
-  async signUp(dataRegister: DataUserDto) {
+  async signUp(dataRegister: DataUserDto): Promise<void> {
     const confirmationCode = generateHash();
     await this.userService.createUser(dataRegister, confirmationCode);
     await this.sengridService.sendMailOfConfirmationCode(
       dataRegister.email,
       confirmationCode,
     );
-    return {
-      message: 'Check your email',
-    };
   }
 
   async confirmEmail(tokenEmail) {
@@ -89,19 +84,17 @@ export class AuthService {
     return this.createToken(user);
   }
 
-  async signIn(user: User, body) {
+  async signIn(user: User) {
     await this.userService.updateUser(user.id, {
       active: true,
     });
     return this.createToken(user);
   }
 
-  async signOut(userId: number): Promise<MessageDto> {
+  //JTI 
+  async signOut(userId: number): Promise<void> {
     await this.userService.updateUser(userId, {
       active: false,
     });
-    return {
-      message: 'Successful logout',
-    };
   }
 }

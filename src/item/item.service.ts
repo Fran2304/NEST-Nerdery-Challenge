@@ -26,11 +26,11 @@ export class ItemService {
   ): Promise<ItemCardDto> {
     const { count, bookId } = body;
     const book = await this.booksService.getOneBookActive(bookId);
-    if (book.quantity < count) {
-      throw new BadRequestException(`The amount ${book.quantity} was exceeded`);
-    }
     if (book.quantity === 0) {
       throw new BadRequestException(`Stock sold out: ${book.title}`);
+    }
+    if (book.quantity < count) {
+      throw new BadRequestException(`The amount ${book.quantity} was exceeded`);
     }
     const cardItem = await this.prismaService.cardItem.create({
       data: {

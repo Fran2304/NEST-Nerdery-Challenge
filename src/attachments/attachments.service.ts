@@ -41,11 +41,13 @@ export class AttachmentsService {
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Expires: Number(process.env.AWS_EXPIRATION_TIME),
     });
+    //console.log('signedUrl', `${attachment.key}.${attachment.ext}`)
     return { signedUrl, ...attachment };
   }
 
   // key → attachment.key
   getSignedURL(key, ext): string {
+    console.log('signedUrl', `${key}.${ext}`)
     return this.s3.getSignedUrl('getObject', {
       Key: `${key}.${ext}`,
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
